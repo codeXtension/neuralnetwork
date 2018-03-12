@@ -12,6 +12,7 @@
 #include <list>
 #include <map>
 #include <sstream>
+#include <random>
 #include "neuron.h"
 #include "synapse.h"
 
@@ -62,12 +63,16 @@ namespace cx {
     }
 
     void brain::create_synapses() {
+        random_device rd;
+        mt19937 mt(rd());
+        uniform_real_distribution<double> dist(0.1, 0.95);
+
         for (int i = 0; i < this->layers.size() - 1; i++) {
             list<neuron> sources = layers.at(i);
             list<neuron> targets = layers.at(i + 1);
             for (neuron &source : sources) {
                 for (neuron target : targets) {
-                    double value = (rand() * 78 + 20) / 100;
+                    double value = (dist(mt) * 78 + 20) / 100;
                     if (neuron *v = dynamic_cast<neuron *>(&target)) {
                         synapse(value, source, target);
                     }
