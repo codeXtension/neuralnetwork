@@ -17,31 +17,31 @@
 namespace cx {
     using namespace std;
 
-    class neural_network;
+    class synapse;
 
     class neuron {
     protected:
         double value;
         string id;
     private:
-        vector<neural_network> incoming_synapse;
-        vector<neural_network> outgoing_synapse;
+        vector<synapse> incoming_synapse;
+        vector<synapse> outgoing_synapse;
     public:
         neuron();
 
         neuron(string id);
 
-        virtual vector<neural_network> &getIncoming_synapse();
+        virtual vector<synapse> &getIncoming_synapse();
 
         bool operator==(neuron &rhs);
 
         bool operator!=(neuron &rhs);
 
-        virtual void setIncoming_synapse(vector<neural_network> &incoming_synapse);
+        virtual void setIncoming_synapse(vector<synapse> &incoming_synapse);
 
-        vector<neural_network> &getOutgoing_synapse();
+        vector<synapse> &getOutgoing_synapse();
 
-        void setOutgoing_synapse(vector<neural_network> &outgoing_synapse);
+        void setOutgoing_synapse(vector<synapse> &outgoing_synapse);
 
         double getValue();
 
@@ -68,10 +68,10 @@ namespace cx {
 
         void setValue(double value) override;
 
-        void setIncoming_synapse(vector<neural_network> &incoming_synapse) override;
+        void setIncoming_synapse(vector<synapse> &incoming_synapse) override;
     };
 
-    class neural_network {
+    class synapse {
 
     private:
         string id;
@@ -80,9 +80,9 @@ namespace cx {
         neuron *target;
 
     public:
-        neural_network();
+        synapse();
 
-        neural_network(double weight, neuron &source, neuron &target);
+        synapse(double weight, neuron &source, neuron &target);
 
         neuron *getSource();
 
@@ -100,9 +100,9 @@ namespace cx {
 
         void setWeight(double weight);
 
-        bool operator==(neural_network &rhs);
+        bool operator==(synapse &rhs);
 
-        bool operator!=(neural_network &rhs);
+        bool operator!=(synapse &rhs);
     };
 
     class brain {
@@ -117,11 +117,11 @@ namespace cx {
 
         void load(data_holder &test_data_holder, bool ignore_weights);
 
-        data_holder &unload();
+        data_holder unload();
 
         list <neuron> &get_layer(int layer_nb);
 
-        map<string, double> &actual_weights();
+        map<string, double> actual_weights();
 
         map<int, std::list<neuron>> &getLayers();
 
@@ -132,11 +132,30 @@ namespace cx {
         void setExpected_output_values(vector<double> &expected_output_values);
     };
 
+    class neural_network {
+    public:
+        void log_weights(brain value);
+    };
+
+    void neural_network::log_weights(brain value) {
+        for (int i = 0; i < value.getLayers().size() - 1; i++) {
+            list <neuron> sources = value.getLayers().at(i);
+            cout << "BRAIN - Synapses from layer " << (i + 1) << " --> " << (i + 2) << endl;
+            for (neuron source : sources) {
+                for (synapse synapse : source.getOutgoing_synapse()) {
+                    neuron target = *synapse.getTarget();
+                    cout << "BRAIN - " << source.getId() << " ---" << synapse.getWeight() << "---> " << target.getId()
+                         << " a(" << target.activationValue() << ")" << endl;
+                }
+            }
+        }
+    }
+
     bias_neuron::bias_neuron() {
         this->value = 1;
     }
 
-    void bias_neuron::setIncoming_synapse(vector<neural_network> &incoming_synapse) {
+    void bias_neuron::setIncoming_synapse(vector<synapse> &incoming_synapse) {
 
     }
 
@@ -159,19 +178,19 @@ namespace cx {
     neuron::neuron() {
     }
 
-    vector<neural_network> &neuron::getIncoming_synapse() {
+    vector<synapse> &neuron::getIncoming_synapse() {
         return incoming_synapse;
     }
 
-    void neuron::setIncoming_synapse(vector<neural_network> &incoming_synapse) {
+    void neuron::setIncoming_synapse(vector<synapse> &incoming_synapse) {
         neuron::incoming_synapse = incoming_synapse;
     }
 
-    vector<neural_network> &neuron::getOutgoing_synapse() {
+    vector<synapse> &neuron::getOutgoing_synapse() {
         return outgoing_synapse;
     }
 
-    void neuron::setOutgoing_synapse(vector<neural_network> &outgoing_synapse) {
+    void neuron::setOutgoing_synapse(vector<synapse> &outgoing_synapse) {
         neuron::outgoing_synapse = outgoing_synapse;
     }
 
@@ -220,54 +239,54 @@ namespace cx {
     }
 
 
-    neural_network::neural_network() {
+    synapse::synapse() {
         this->id = "-";
         this->weight = 0;
         this->source = new neuron("");
         this->target = new neuron("");
     }
 
-    bool neural_network::operator==(neural_network &rhs) {
+    bool synapse::operator==(synapse &rhs) {
         return id == rhs.id;
     }
 
-    bool neural_network::operator!=(neural_network &rhs) {
+    bool synapse::operator!=(synapse &rhs) {
         return rhs.id != this->id;
     }
 
-    string &neural_network::getId() {
+    string &synapse::getId() {
         return id;
     }
 
-    void neural_network::setId(string &id) {
-        neural_network::id = id;
+    void synapse::setId(string &id) {
+        synapse::id = id;
     }
 
-    double neural_network::getWeight() {
+    double synapse::getWeight() {
         return weight;
     }
 
-    void neural_network::setWeight(double weight) {
-        neural_network::weight = weight;
+    void synapse::setWeight(double weight) {
+        synapse::weight = weight;
     }
 
-    neuron *neural_network::getSource() {
+    neuron *synapse::getSource() {
         return source;
     }
 
-    void neural_network::setSource(neuron *source) {
-        neural_network::source = source;
+    void synapse::setSource(neuron *source) {
+        synapse::source = source;
     }
 
-    neuron *neural_network::getTarget() {
+    neuron *synapse::getTarget() {
         return target;
     }
 
-    void neural_network::setTarget(neuron *target) {
-        neural_network::target = target;
+    void synapse::setTarget(neuron *target) {
+        synapse::target = target;
     }
 
-    neural_network::neural_network(double weight, neuron &source, neuron &target) {
+    synapse::synapse(double weight, neuron &source, neuron &target) {
         this->weight = weight;
         this->source = &source;
         this->target = &target;
@@ -300,7 +319,7 @@ namespace cx {
                 for (neuron target : targets) {
                     double value = (rand() * 78 + 20) / 100;
                     if (neuron *v = dynamic_cast<neuron *>(&target)) {
-                        new neural_network(value, source, target);
+                        synapse(value, source, target);
                     }
                 }
             }
@@ -353,7 +372,7 @@ namespace cx {
                     source.setValue(test_data_holder.getValues().at(source.getId()));
                 }
                 if (!ignore_weights) {
-                    for (neural_network synapse : source.getOutgoing_synapse()) {
+                    for (synapse synapse : source.getOutgoing_synapse()) {
                         if (test_data_holder.getWeights().count(synapse.getId()) > 0) {
                             synapse.setWeight(test_data_holder.getWeights().at(synapse.getId()));
                         }
@@ -363,20 +382,20 @@ namespace cx {
         }
     }
 
-    data_holder &brain::unload() {
+    data_holder brain::unload() {
         data_holder dataHolder;
 
         for (int i = 0; i < layers.size(); i++) {
             list <neuron> sources = layers.at(i);
             for (neuron source : sources) {
                 dataHolder.getValues().insert(pair<string, double>(source.getId(), source.getValue()));
-                for (neural_network synapse : source.getOutgoing_synapse()) {
+                for (synapse synapse : source.getOutgoing_synapse()) {
                     dataHolder.getWeights().insert(pair<string, double>(synapse.getId(), synapse.getWeight()));
                 }
             }
         }
 
-        dataHolder.setExpected_outputs(getExpected_output_values());
+        dataHolder.setExpected_outputs(expected_output_values);
 
         return dataHolder;
     }
@@ -385,12 +404,12 @@ namespace cx {
         return this->layers.at(layer_nb);
     }
 
-    map<string, double> &brain::actual_weights() {
+    map<string, double> brain::actual_weights() {
         map<string, double> results;
         for (int i = 0; i < layers.size() - 1; i++) {
             list <neuron> sources = layers.at(i);
             for (neuron source : sources) {
-                for (neural_network synapse : source.getOutgoing_synapse()) {
+                for (synapse synapse : source.getOutgoing_synapse()) {
                     results.insert(pair<string, double>(synapse.getId(), synapse.getWeight()));
                 }
             }
