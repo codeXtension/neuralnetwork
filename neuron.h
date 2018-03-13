@@ -21,7 +21,7 @@ namespace cx {
 
     class neuron {
     protected:
-        double value;
+        double value = 0;
         string id;
     private:
         vector<synapse> incoming_synapse;
@@ -31,25 +31,27 @@ namespace cx {
 
         neuron(string id);
 
-        virtual vector<synapse> &getIncoming_synapse();
+        virtual string type();
 
-        bool operator==(neuron &rhs);
+        virtual vector<synapse> getIncoming_synapse();
 
-        bool operator!=(neuron &rhs);
+        bool operator==(neuron rhs);
 
-        virtual void setIncoming_synapse(vector<synapse> &incoming_synapse);
+        bool operator!=(neuron rhs);
 
-        vector<synapse> &getOutgoing_synapse();
+        virtual void setIncoming_synapse(vector<synapse> incoming_synapse);
 
-        void setOutgoing_synapse(vector<synapse> &outgoing_synapse);
+        vector<synapse> getOutgoing_synapse();
+
+        void setOutgoing_synapse(vector<synapse> outgoing_synapse);
 
         double getValue();
 
         virtual void setValue(double value);
 
-        string &getId();
+        string getId();
 
-        void setId(string &id);
+        void setId(string id);
 
         virtual double activationValue();
 
@@ -60,6 +62,8 @@ namespace cx {
     public:
         bias_neuron();
 
+        string type();
+
         explicit bias_neuron(string id);
 
         double activationValue() override;
@@ -68,14 +72,14 @@ namespace cx {
 
         void setValue(double value) override;
 
-        void setIncoming_synapse(vector<synapse> &incoming_synapse) override;
+        void setIncoming_synapse(vector<synapse> incoming_synapse) override;
     };
 
     bias_neuron::bias_neuron() {
         this->value = 1;
     }
 
-    void bias_neuron::setIncoming_synapse(vector<synapse> &incoming_synapse) {
+    void bias_neuron::setIncoming_synapse(vector<synapse> incoming_synapse) {
 
     }
 
@@ -91,26 +95,31 @@ namespace cx {
         return neuron::getValue();
     }
 
-    bias_neuron::bias_neuron(string id) : neuron(id) {
+    bias_neuron::bias_neuron(string id) {
         this->id = id;
+        cout << "BiasNeuron created with id " << id << endl;
+    }
+
+    string bias_neuron::type() {
+        return "bias_neuron";
     }
 
     neuron::neuron() {
     }
 
-    vector<synapse> &neuron::getIncoming_synapse() {
+    vector<synapse> neuron::getIncoming_synapse() {
         return incoming_synapse;
     }
 
-    void neuron::setIncoming_synapse(vector<synapse> &incoming_synapse) {
+    void neuron::setIncoming_synapse(vector<synapse> incoming_synapse) {
         neuron::incoming_synapse = incoming_synapse;
     }
 
-    vector<synapse> &neuron::getOutgoing_synapse() {
+    vector<synapse> neuron::getOutgoing_synapse() {
         return outgoing_synapse;
     }
 
-    void neuron::setOutgoing_synapse(vector<synapse> &outgoing_synapse) {
+    void neuron::setOutgoing_synapse(vector<synapse> outgoing_synapse) {
         neuron::outgoing_synapse = outgoing_synapse;
     }
 
@@ -122,19 +131,19 @@ namespace cx {
         neuron::value = value;
     }
 
-    string &neuron::getId() {
+    string neuron::getId() {
         return id;
     }
 
-    void neuron::setId(string &id) {
+    void neuron::setId(string id) {
         neuron::id = id;
     }
 
-    bool neuron::operator==(neuron &rhs) {
+    bool neuron::operator==(neuron rhs) {
         return id == rhs.id;
     }
 
-    bool neuron::operator!=(neuron &rhs) {
+    bool neuron::operator!=(neuron rhs) {
         return !(rhs == *this);
     }
 
@@ -156,6 +165,11 @@ namespace cx {
 
     neuron::neuron(string id) {
         this->id = id;
+        cout << "Neuron created with id " << id << endl;
+    }
+
+    string neuron::type() {
+        return "neuron";
     }
 }
 #endif //NEURALNETWORK_NEURON_H

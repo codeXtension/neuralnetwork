@@ -19,56 +19,54 @@ namespace cx {
 
     private:
         string id;
-        double weight;
-        neuron *source;
-        neuron *target;
+        double weight = 0;
+        neuron source;
+        neuron target;
 
     public:
         synapse();
 
-        synapse(double weight, neuron &source, neuron &target);
+        synapse(double weight, neuron source, neuron target);
 
-        neuron *getSource();
+        neuron getSource();
 
-        void setSource(neuron *source);
+        void setSource(neuron source);
 
-        neuron *getTarget();
+        neuron getTarget();
 
-        void setTarget(neuron *target);
+        void setTarget(neuron target);
 
-        string &getId();
+        string getId();
 
-        void setId(string &id);
+        void setId(string id);
 
         double getWeight();
 
         void setWeight(double weight);
 
-        bool operator==(synapse &rhs);
+        bool operator==(synapse rhs);
 
-        bool operator!=(synapse &rhs);
+        bool operator!=(synapse rhs);
     };
 
     synapse::synapse() {
         this->id = "-";
         this->weight = 0;
-        this->source = new neuron("");
-        this->target = new neuron("");
     }
 
-    bool synapse::operator==(synapse &rhs) {
+    bool synapse::operator==(synapse rhs) {
         return id == rhs.id;
     }
 
-    bool synapse::operator!=(synapse &rhs) {
+    bool synapse::operator!=(synapse rhs) {
         return rhs.id != this->id;
     }
 
-    string &synapse::getId() {
+    string synapse::getId() {
         return id;
     }
 
-    void synapse::setId(string &id) {
+    void synapse::setId(string id) {
         synapse::id = id;
     }
 
@@ -80,28 +78,25 @@ namespace cx {
         synapse::weight = weight;
     }
 
-    neuron *synapse::getSource() {
+    neuron synapse::getSource() {
         return source;
     }
 
-    void synapse::setSource(neuron *source) {
+    void synapse::setSource(neuron source) {
         synapse::source = source;
     }
 
-    neuron *synapse::getTarget() {
+    neuron synapse::getTarget() {
         return target;
     }
 
-    void synapse::setTarget(neuron *target) {
+    void synapse::setTarget(neuron target) {
         synapse::target = target;
     }
 
-    synapse::synapse(double weight, neuron &source, neuron &target) {
+    synapse::synapse(double weight, neuron source, neuron target) {
         this->weight = weight;
-        this->source = &source;
-        this->target = &target;
-        this->source->getOutgoing_synapse().push_back(*this);
-        this->target->getIncoming_synapse().push_back(*this);
+        this->id = source.getId() + "-" + target.getId();
     }
 }
 #endif //NEURALNETWORK_SYNAPSE_H
