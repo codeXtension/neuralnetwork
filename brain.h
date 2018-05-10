@@ -69,19 +69,22 @@ namespace cx {
         uniform_real_distribution<double> dist(0.1, 0.95);
 
         for (int i = 0; i < this->layers.size() - 1; i++) {
-            list<neuron> sources = layers.at(i);
-            list<neuron> targets = layers.at(i + 1);
+            list<neuron> &sources = layers.at(i);
+            list<neuron> &targets = layers.at(i + 1);
             for (neuron &source : sources) {
                 for (neuron &target : targets) {
                     if (target.type() == "neuron") {
                         double value = (dist(mt) * 78 + 20) / 100;
-                        synapse _synapse_ = synapse(value, source, target);
+                        synapse _synapse_ = synapse(value, &source, &target);
+                        source.add_outgoing_synapse(&_synapse_);
+                        target.add_incoming_synapse(&_synapse_);
                     } else {
                         cout << target.type() << endl;
                     }
                 }
             }
         }
+        cout << endl;
     }
 
     brain::brain(int in_size, int out_size, int nb_hidden_layers, int hidden_layer_size, bool with_bias) {

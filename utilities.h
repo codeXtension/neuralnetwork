@@ -33,6 +33,19 @@ namespace cx {
         MINI_BATCH
     };
 
+    class test {
+    private:
+        char32_t *initials;
+    public:
+        char32_t *getInitials() const {
+            return initials;
+        }
+
+        test(char32_t *string) {
+            this->initials = string;
+        }
+    };
+
     class data_holder {
     public:
          map<string, double> &getWeights() ;

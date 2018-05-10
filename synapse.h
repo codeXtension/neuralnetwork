@@ -21,21 +21,11 @@ namespace cx {
     private:
         string id;
         double weight = 0;
-        neuron source;
-        neuron target;
+        neuron *source;
+        neuron *target;
 
     public:
-        synapse();
-
-        synapse(double weight, neuron &source, neuron &target);
-
-        neuron getSource();
-
-        void setSource(neuron source);
-
-        neuron getTarget();
-
-        void setTarget(neuron target);
+        synapse(double weight, neuron *source, neuron *target);
 
         string getId();
 
@@ -48,12 +38,15 @@ namespace cx {
         bool operator==(synapse rhs);
 
         bool operator!=(synapse rhs);
-    };
 
-    synapse::synapse() {
-        this->id = "-";
-        this->weight = 0;
-    }
+        neuron *getSource() const;
+
+        void setSource(neuron *source);
+
+        neuron *getTarget() const;
+
+        void setTarget(neuron *target);
+    };
 
     bool synapse::operator==(synapse rhs) {
         return id == rhs.id;
@@ -79,30 +72,28 @@ namespace cx {
         synapse::weight = weight;
     }
 
-    neuron synapse::getSource() {
+    neuron *synapse::getSource() const {
         return source;
     }
 
-    void synapse::setSource(neuron source) {
+    void synapse::setSource(neuron *source) {
         synapse::source = source;
     }
 
-    neuron synapse::getTarget() {
+    neuron *synapse::getTarget() const {
         return target;
     }
 
-    void synapse::setTarget(neuron target) {
+    void synapse::setTarget(neuron *target) {
         synapse::target = target;
     }
 
-    synapse::synapse(double weight, neuron &source, neuron &target) {
-        this->id = source.getId() + "-" + target.getId();
+
+    synapse::synapse(double weight, neuron *source, neuron *target) {
+        this->id = source->getId() + "-" + target->getId();
         this->weight = weight;
         this->source = source;
         this->target = target;
-
-        this->source.add_outgoing_synapse(this);
-        this->target.add_incoming_synapse(this);
     }
 }
 #endif //NEURALNETWORK_SYNAPSE_H

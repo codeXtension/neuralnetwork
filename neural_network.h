@@ -30,9 +30,9 @@ namespace cx {
             cout << "BRAIN - Synapses from layer " << (i + 1) << " --> " << (i + 2) << endl;
             for (neuron source : sources) {
                 for (synapse synapse : source.getOutgoing_synapse()) {
-                    neuron target = synapse.getTarget();
-                    cout << "BRAIN - " << source.getId() << " ---" << synapse.getWeight() << "---> " << target.getId()
-                         << " a(" << target.activationValue() << ")" << endl;
+                    neuron *target = synapse.getTarget();
+                    cout << "BRAIN - " << source.getId() << " ---" << synapse.getWeight() << "---> " << target->getId()
+                         << " a(" << target->activationValue() << ")" << endl;
                 }
             }
         }
