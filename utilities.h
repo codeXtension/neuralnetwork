@@ -33,30 +33,25 @@ namespace cx {
         MINI_BATCH
     };
 
-    class test {
-    private:
-        char32_t *initials;
-    public:
-        char32_t *getInitials() const {
-            return initials;
-        }
-
-        test(char32_t *string) {
-            this->initials = string;
-        }
-    };
-
     class data_holder {
     public:
-         map<string, double> &getWeights() ;
-        void setWeights( map<string, double> &weights);
-         map<string, double> &getValues() ;
-        void setValues( map<string, double> &values);
-         vector<double> &getExpected_outputs() ;
-        void setExpected_outputs( vector<double> &expected_outputs);
-         vector<double> &getPrev_outputs() ;
-        void setPrev_outputs( vector<double> &prev_outputs);
-        void add_input( vector<double> &inputs);
+        map<string, double> &getWeights();
+
+        void setWeights(map<string, double> &weights);
+
+        map<string, double> &getValues();
+
+        void setValues(map<string, double> &values);
+
+        vector<double> &getExpected_outputs();
+
+        void setExpected_outputs(vector<double> &expected_outputs);
+
+        vector<double> &getPrev_outputs();
+
+        void setPrev_outputs(vector<double> &prev_outputs);
+
+        void add_input(vector<double> &inputs);
 
     private:
         map<string, double> weights;
@@ -65,40 +60,40 @@ namespace cx {
         vector<double> prev_outputs;
     };
 
-     map<string, double> &data_holder::getWeights()  {
+    map<string, double> &data_holder::getWeights() {
         return weights;
     }
 
-    void data_holder::setWeights( map<string, double> &weights) {
+    void data_holder::setWeights(map<string, double> &weights) {
         data_holder::weights = weights;
     }
 
-     map<string, double> &data_holder::getValues()  {
+    map<string, double> &data_holder::getValues() {
         return values;
     }
 
-    void data_holder::setValues( map<string, double> &values) {
+    void data_holder::setValues(map<string, double> &values) {
         data_holder::values = values;
     }
 
-     vector<double> &data_holder::getExpected_outputs()  {
+    vector<double> &data_holder::getExpected_outputs() {
         return expected_outputs;
     }
 
-    void data_holder::setExpected_outputs( vector<double> &expected_outputs) {
+    void data_holder::setExpected_outputs(vector<double> &expected_outputs) {
         data_holder::expected_outputs = expected_outputs;
     }
 
-     vector<double> &data_holder::getPrev_outputs()  {
+    vector<double> &data_holder::getPrev_outputs() {
         return prev_outputs;
     }
 
-    void data_holder::setPrev_outputs( vector<double> &prev_outputs) {
+    void data_holder::setPrev_outputs(vector<double> &prev_outputs) {
         data_holder::prev_outputs = prev_outputs;
     }
 
-    void data_holder::add_input( vector<double> &inputs) {
-        for (int i=0; i<inputs.size(); i++) {
+    void data_holder::add_input(vector<double> &inputs) {
+        for (int i = 0; i < inputs.size(); i++) {
             double input = inputs.at(i);
             this->values.insert(pair<string, double>("N1." + i, input));
         }

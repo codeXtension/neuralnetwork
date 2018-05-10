@@ -26,7 +26,7 @@ namespace cx {
 
     void neural_network::log_weights(brain value) {
         for (int i = 0; i < value.getLayers().size() - 1; i++) {
-            list <neuron> sources = value.getLayers().at(i);
+            list<neuron> sources = value.getLayers().at(i);
             cout << "BRAIN - Synapses from layer " << (i + 1) << " --> " << (i + 2) << endl;
             for (neuron source : sources) {
                 for (synapse synapse : source.getOutgoing_synapse()) {
