@@ -9,6 +9,7 @@
 #include <iostream>
 #include <vector>
 #include "utilities.h"
+#include "neuron.h"
 #include <list>
 #include <map>
 #include <sstream>
@@ -26,7 +27,7 @@ namespace cx {
     public:
         synapse();
 
-        synapse(double weight, neuron source, neuron target);
+        synapse(double weight, neuron &source, neuron &target);
 
         neuron getSource();
 
@@ -94,9 +95,14 @@ namespace cx {
         synapse::target = target;
     }
 
-    synapse::synapse(double weight, neuron source, neuron target) {
-        this->weight = weight;
+    synapse::synapse(double weight, neuron &source, neuron &target) {
         this->id = source.getId() + "-" + target.getId();
+        this->weight = weight;
+        this->source = source;
+        this->target = target;
+
+        this->source.add_outgoing_synapse(this);
+        this->target.add_incoming_synapse(this);
     }
 }
 #endif //NEURALNETWORK_SYNAPSE_H

@@ -29,7 +29,7 @@ namespace cx {
     public:
         neuron();
 
-        neuron(string id);
+        explicit neuron(string id);
 
         virtual string type();
 
@@ -56,6 +56,10 @@ namespace cx {
         virtual double activationValue();
 
         virtual double activationPrimeValue();
+
+        void add_outgoing_synapse(synapse *pSynapse);
+
+        void add_incoming_synapse(synapse *pSynapse);
     };
 
     class bias_neuron : public neuron {
@@ -170,6 +174,14 @@ namespace cx {
 
     string neuron::type() {
         return "neuron";
+    }
+
+    void neuron::add_outgoing_synapse(synapse *pSynapse) {
+        this->outgoing_synapse.push_back(*pSynapse);
+    }
+
+    void neuron::add_incoming_synapse(synapse *pSynapse) {
+        this->incoming_synapse.push_back(*pSynapse);
     }
 }
 #endif //NEURALNETWORK_NEURON_H

@@ -76,11 +76,6 @@ namespace cx {
                     if (target.type() == "neuron") {
                         double value = (dist(mt) * 78 + 20) / 100;
                         synapse _synapse_ = synapse(value, source, target);
-                        source.getOutgoing_synapse().push_back(_synapse_);
-                        target.getIncoming_synapse().push_back(_synapse_);
-
-                        _synapse_.setSource(source);
-                        _synapse_.setTarget(target);
                     } else {
                         cout << target.type() << endl;
                     }
