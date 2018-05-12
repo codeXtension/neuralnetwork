@@ -22,6 +22,18 @@ namespace cx {
     class neural_network {
     public:
         void log_weights(brain value);
+        neural_network(bool with_bias, double learning_rate, method_type meth_type, int input_size, int output_size, int nb_hidden_layers, int size_hidden_layer);
+        void initialize_data(vector<map<value_type, vector<double>>> data);
+    private:
+        brain current_brain = brain(0, 0, 0, 0, false);
+        double match_range;
+        bool with_bias;
+        double learning_rate;
+        int current_iteration;
+        method_type meth_type;
+        vector<data_holder> training_data;
+        int nb_hidden_layers;
+        int size_hidden_layer;
     };
 
     void neural_network::log_weights(brain value) {
@@ -35,6 +47,30 @@ namespace cx {
                          << " a(" << target->activationValue() << ")" << endl;
                 }
             }
+        }
+    }
+
+    neural_network::neural_network(bool with_bias, double learning_rate, method_type meth_type, int input_size, int output_size, int nb_hidden_layers, int size_hidden_layer)
+    {
+        this->training_data = {};
+        this->match_range =0.1;
+        this->meth_type=meth_type;
+        this->with_bias=with_bias;
+        this->nb_hidden_layers=nb_hidden_layers;
+        this->size_hidden_layer=size_hidden_layer;
+        this->learning_rate=learning_rate;
+        current_brain = brain(input_size, output_size, nb_hidden_layers, size_hidden_layer, with_bias);
+
+        log_weights(current_brain);
+    }
+
+    void neural_network::initialize_data(vector<map<value_type, vector<double>>> data) {
+        for (map<value_type , vector<double>> instance : data) {
+            data_holder dataHolder;
+            dataHolder.add_input(instance.at(INPUT));
+            dataHolder.setExpected_outputs(instance.at(OUTPUT));
+            dataHolder.setWeights(this->current_brain.actual_weights());
+            training_data.push_back(dataHolder);
         }
     }
 }

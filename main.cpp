@@ -4,9 +4,8 @@
 using namespace cx;
 
 int main() {
-    brain br = brain(2, 1, 1, 3, true);
-    neural_network network;
-    network.log_weights(br);
+    neural_network network = neural_network(true, 0.002, SGD, 2,1,1,3);
+
     return 0;
 }
 

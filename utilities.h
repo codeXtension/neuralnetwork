@@ -9,6 +9,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <sstream>
 
 using namespace std;
 
@@ -22,7 +23,7 @@ namespace cx {
         return sigmoid * (1.0d - sigmoid);
     }
 
-    enum value_tyle {
+    enum value_type {
         INPUT,
         OUTPUT
     };
@@ -35,9 +36,9 @@ namespace cx {
 
     class data_holder {
     public:
-        map<string, double> &getWeights();
+        map<string, double> getWeights();
 
-        void setWeights(map<string, double> &weights);
+        void setWeights(map<string, double> weights);
 
         map<string, double> &getValues();
 
@@ -60,11 +61,11 @@ namespace cx {
         vector<double> prev_outputs;
     };
 
-    map<string, double> &data_holder::getWeights() {
+    map<string, double> data_holder::getWeights() {
         return weights;
     }
 
-    void data_holder::setWeights(map<string, double> &weights) {
+    void data_holder::setWeights(map<string, double> weights) {
         data_holder::weights = weights;
     }
 
