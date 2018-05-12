@@ -23,7 +23,7 @@ namespace cx {
     public:
         void log_weights(brain value);
         neural_network(bool with_bias, double learning_rate, method_type meth_type, int input_size, int output_size, int nb_hidden_layers, int size_hidden_layer);
-        void initialize_data(vector<map<value_type, vector<double>>> data);
+        void initialize_data(vector<map<value_type, vector<int>>> data);
     private:
         brain current_brain = brain(0, 0, 0, 0, false);
         double match_range;
@@ -64,8 +64,8 @@ namespace cx {
         log_weights(current_brain);
     }
 
-    void neural_network::initialize_data(vector<map<value_type, vector<double>>> data) {
-        for (map<value_type , vector<double>> instance : data) {
+    void neural_network::initialize_data(vector<map<value_type, vector<int>>> data) {
+        for (map<value_type , vector<int>> instance : data) {
             data_holder dataHolder;
             dataHolder.add_input(instance.at(INPUT));
             dataHolder.setExpected_outputs(instance.at(OUTPUT));

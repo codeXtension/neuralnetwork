@@ -23,7 +23,7 @@ namespace cx {
     class brain {
     private:
         map<int, std::list<neuron>> layers;
-        vector<double> expected_output_values;
+        vector<int> expected_output_values;
 
         void create_synapses();
 
@@ -36,15 +36,15 @@ namespace cx {
 
         list<neuron> get_layer(int layer_nb);
 
-        map<string, double> actual_weights();
+        map<string, int> actual_weights();
 
         map<int, std::list<neuron>> getLayers();
 
         void setLayers(map<int, std::list<neuron>> layers);
 
-        vector<double> getExpected_output_values();
+        vector<int> getExpected_output_values();
 
-        void setExpected_output_values(vector<double> expected_output_values);
+        void setExpected_output_values(vector<int> expected_output_values);
     };
 
     map<int, std::list<neuron>> brain::getLayers() {
@@ -55,11 +55,11 @@ namespace cx {
         brain::layers = layers;
     }
 
-    vector<double> brain::getExpected_output_values() {
+    vector<int> brain::getExpected_output_values() {
         return expected_output_values;
     }
 
-    void brain::setExpected_output_values(vector<double> expected_output_values) {
+    void brain::setExpected_output_values(vector<int> expected_output_values) {
         brain::expected_output_values = expected_output_values;
     }
 
@@ -152,9 +152,9 @@ namespace cx {
         for (int i = 0; i < layers.size(); i++) {
             list<neuron> sources = layers.at(i);
             for (neuron source : sources) {
-                dataHolder.getValues().insert(pair<string, double>(source.getId(), source.getValue()));
+                dataHolder.getValues().insert(pair<string, int>(source.getId(), source.getValue()));
                 for (synapse synapse : source.getOutgoing_synapse()) {
-                    dataHolder.getWeights().insert(pair<string, double>(synapse.getId(), synapse.getWeight()));
+                    dataHolder.getWeights().insert(pair<string, int>(synapse.getId(), synapse.getWeight()));
                 }
             }
         }
@@ -168,13 +168,13 @@ namespace cx {
         return this->layers.at(layer_nb);
     }
 
-    map<string, double> brain::actual_weights() {
-        map<string, double> results;
+    map<string, int> brain::actual_weights() {
+        map<string, int> results;
         for (int i = 0; i < layers.size() - 1; i++) {
             list<neuron> sources = layers.at(i);
             for (neuron source : sources) {
                 for (synapse synapse : source.getOutgoing_synapse()) {
-                    results.insert(pair<string, double>(synapse.getId(), synapse.getWeight()));
+                    results.insert(pair<string, int>(synapse.getId(), synapse.getWeight()));
                 }
             }
         }
