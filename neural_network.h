@@ -42,17 +42,17 @@ namespace cx {
 
         int think_sgd(long max_nb_iterations);
 
-        bool not_all_true(map<int, bool> states);
+        bool not_all_true(vector<bool> states);
 
-        bool values_matching(vector<neuron> neurons, vector<double> expected_values);
+        bool values_matching(vector<neuron> neurons, vector<int> expected_values);
 
         void eval_fwd_propagation(brain &brain_instance);
 
-        map<string, double> delta_weights(brain brain_instance, map<string, double[]> gradients);
+        map<string, double> delta_weights(brain &brain_instance, map<string, vector<double>> gradients);
 
         void update_weights(brain &brain_instance, map<string, double> deltas);
 
-        map<string, vector<double>> gradients(brain &brain_instance);
+        map<string, vector<double>> eval_gradients(brain &brain_instance);
 
         double match_range;
         bool with_bias;
@@ -82,7 +82,7 @@ namespace cx {
                                    int output_size, int nb_hidden_layers, int size_hidden_layer) {
         this->current_iteration = 0;
         this->training_data = {};
-        this->match_range = 0.1;
+        this->match_range = 0.2;
         this->meth_type = meth_type;
         this->with_bias = with_bias;
         this->nb_hidden_layers = nb_hidden_layers;
@@ -111,11 +111,11 @@ namespace cx {
     int neural_network::think(long max_nb_iterations) {
         switch (meth_type) {
             case SGD:
-                return think_sgd(LONG_MAX);
+                return think_sgd(max_nb_iterations);
             case BATCH:
-                return think_batch(LONG_MAX);
+                return think_batch(max_nb_iterations);
             default:
-                return think_sgd(LONG_MAX);
+                return think_sgd(max_nb_iterations);
         }
     }
 
@@ -123,20 +123,20 @@ namespace cx {
         eval_fwd_propagation(current_brain);
     }
 
-    bool neural_network::not_all_true(map<int, bool> states) {
+    bool neural_network::not_all_true(vector<bool> states) {
         bool result = true;
 
         for (int i = 0; i < states.size(); i++) {
-            result &= states.at(i);
+            result &= states[i];
         }
 
-        return result;
+        return !result;
     }
 
-    bool neural_network::values_matching(vector<neuron> neurons, vector<double> expected_values) {
+    bool neural_network::values_matching(vector<neuron> neurons, vector<int> expected_values) {
         bool result = true;
 
-        for (unsigned long i = 0; i < neurons.size(); i++) {
+        for (int i = 0; i < neurons.size(); i++) {
             neuron n = neurons.at(i);
             result &= (abs(expected_values.at(i) - n.activationValue())) <= match_range;
         }
@@ -145,11 +145,28 @@ namespace cx {
     }
 
     int neural_network::think_batch(long max_nb_iterations) {
+        //TODO: still needs to be migrated
         return 0;
     }
 
     int neural_network::think_sgd(long max_nb_iterations) {
-        return 0;
+        vector<bool> instanceState;
+        for (int u = 0; u < training_data.size(); u++) {
+            instanceState.push_back(false);
+        }
+        while (not_all_true(instanceState) && current_iteration < max_nb_iterations) {
+            current_iteration++;
+            for (int u = 0; u < training_data.size(); u++) {
+                current_brain.load(training_data.at(u), true);
+                eval_fwd_propagation(current_brain);
+                map<string, vector<double>> gradients = eval_gradients(current_brain);
+                auto d_weights = delta_weights(current_brain, gradients);
+                update_weights(current_brain, d_weights);
+                instanceState[u] = values_matching(current_brain.getOutputs(),
+                                                   current_brain.getExpected_output_values());
+            }
+        }
+        return current_iteration;
     }
 
     void neural_network::eval_fwd_propagation(brain &brain_instance) {
@@ -167,16 +184,60 @@ namespace cx {
         }
     }
 
-    map<string, double> neural_network::delta_weights(brain brain_instance, map<string, double[]> gradients) {
-        return map<string, double>();
+    map<string, double> neural_network::delta_weights(brain &brain_instance, map<string, vector<double>> gradients) {
+        map<string, double> deltasWeight;
+        for (int i = brain_instance.getLayers().size() - 2; i >= 0; i--) {
+            for (int j = 0; j < brain_instance.get_layer(i).size(); j++) {
+                neuron neuron_instance = brain_instance.get_layer(i).at(j);
+                vector<double> values = gradients.at("hidden_" + to_string(i + 1));
+                for (int s = 0; s < neuron_instance.getOutgoing_synapse().size(); s++) {
+                    synapse synapse_instance = neuron_instance.getOutgoing_synapse().at(s);
+                    double delta_weight = values[s] * neuron_instance.activationValue();
+                    deltasWeight.insert(pair<string, double>(synapse_instance.getId(), delta_weight));
+                }
+            }
+        }
+        return deltasWeight;
     }
 
     void neural_network::update_weights(brain &brain_instance, map<string, double> deltas) {
-
+        for (int i = brain_instance.getLayers().size() - 2; i >= 0; i--) {
+            for (int j = 0; j < brain_instance.get_layer(i).size(); j++) {
+                neuron &neuron_instance = brain_instance.get_layer(i).at(j);
+                for (int s = 0; s < neuron_instance.getOutgoing_synapse().size(); s++) {
+                    synapse &synapse_instance = neuron_instance.getOutgoing_synapse().at(s);
+                    double weight =
+                            synapse_instance.getWeight() - (learning_rate * deltas.at(synapse_instance.getId()));
+                    synapse_instance.setWeight(weight);
+                }
+            }
+        }
     }
 
-    map<string, vector<double>> neural_network::gradients(brain &brain_instance) {
-        return map<string, vector<double>>();
+    map<string, vector<double>> neural_network::eval_gradients(brain &brain_instance) {
+        map<string, vector<double>> deltas = map<string, vector<double>>();
+        for (int i = brain_instance.getLayers().size() - 1; i > 0; i--) {
+            vector<double> deltaHiddenSum = vector<double>();
+            for (int z = 0; z < brain_instance.get_layer(i).size(); z++) {
+                neuron neuron_instance = brain_instance.get_layer(i).at(z);
+
+                if (i == (brain_instance.getLayers().size() - 1)) {
+                    deltaHiddenSum.push_back(
+                            (neuron_instance.activationValue() - brain_instance.getExpected_output_values().at(z)) *
+                            neuron_instance.activationPrimeValue());
+                } else {
+                    double dhs = 0;
+                    for (int j = 0; j < neuron_instance.getOutgoing_synapse().size(); j++) {
+                        synapse synapse_instance = neuron_instance.getOutgoing_synapse().at(j);
+                        dhs += deltas.at("hidden_" + to_string(i + 1))[j] * synapse_instance.getWeight();
+                    }
+                    deltaHiddenSum.push_back(dhs * neuron_instance.activationPrimeValue());
+                }
+            }
+            string label = "hidden_" + to_string(i);
+            deltas.insert(pair<string, vector<double>>(label, deltaHiddenSum));
+        }
+        return deltas;
     }
 }
 

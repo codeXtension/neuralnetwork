@@ -39,7 +39,7 @@ namespace cx {
 
         virtual void setIncoming_synapse(vector<synapse> incoming_synapse);
 
-        vector<synapse> getOutgoing_synapse();
+        vector<synapse> &getOutgoing_synapse();
 
         void setOutgoing_synapse(vector<synapse> outgoing_synapse);
 
@@ -117,7 +117,7 @@ namespace cx {
         neuron::incoming_synapse = incoming_synapse;
     }
 
-    vector<synapse> neuron::getOutgoing_synapse() {
+    vector<synapse> &neuron::getOutgoing_synapse() {
         return outgoing_synapse;
     }
 

@@ -40,6 +40,8 @@ namespace cx {
 
         map<int, vector<neuron>> getLayers();
 
+        vector<neuron> getOutputs();
+
         void setLayers(map<int, vector<neuron>> layers);
 
         vector<int> getExpected_output_values();
@@ -177,6 +179,10 @@ namespace cx {
             }
         }
         return results;
+    }
+
+    vector<neuron> brain::getOutputs() {
+        return layers.at(layers.size() - 1);
     }
 }
 
