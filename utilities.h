@@ -69,9 +69,9 @@ namespace cx {
 
     class data_holder {
     public:
-        map<string, int> getWeights();
+        map<string, double> getWeights();
 
-        void setWeights(map<string, int> weights);
+        void setWeights(map<string, double> weights);
 
         map<string, int> &getValues();
 
@@ -88,17 +88,17 @@ namespace cx {
         void add_input(vector<int> &inputs);
 
     private:
-        map<string, int> weights;
+        map<string, double> weights;
         map<string, int> values;
         vector<int> expected_outputs;
         vector<int> prev_outputs;
     };
 
-    map<string, int> data_holder::getWeights() {
+    map<string, double> data_holder::getWeights() {
         return weights;
     }
 
-    void data_holder::setWeights(map<string, int> weights) {
+    void data_holder::setWeights(map<string, double> weights) {
         data_holder::weights = weights;
     }
 
@@ -129,7 +129,8 @@ namespace cx {
     void data_holder::add_input(vector<int> &inputs) {
         for (int i = 0; i < inputs.size(); i++) {
             int input = inputs.at(i);
-            this->values.insert(pair<string, int>("N1." + i, input));
+            string node_name = "N1." + to_string(i);
+            this->values.insert(pair<string, int>(node_name, input));
         }
     }
 }

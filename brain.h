@@ -36,7 +36,7 @@ namespace cx {
 
         list<neuron> get_layer(int layer_nb);
 
-        map<string, int> actual_weights();
+        map<string, double> actual_weights();
 
         map<int, std::list<neuron>> getLayers();
 
@@ -168,13 +168,13 @@ namespace cx {
         return this->layers.at(layer_nb);
     }
 
-    map<string, int> brain::actual_weights() {
-        map<string, int> results;
+    map<string, double> brain::actual_weights() {
+        map<string, double> results;
         for (int i = 0; i < layers.size() - 1; i++) {
             list<neuron> sources = layers.at(i);
             for (neuron source : sources) {
                 for (synapse synapse : source.getOutgoing_synapse()) {
-                    results.insert(pair<string, int>(synapse.getId(), synapse.getWeight()));
+                    results.insert(pair<string, double>(synapse.getId(), synapse.getWeight()));
                 }
             }
         }

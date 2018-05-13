@@ -52,6 +52,7 @@ namespace cx {
 
     neural_network::neural_network(bool with_bias, double learning_rate, method_type meth_type, int input_size, int output_size, int nb_hidden_layers, int size_hidden_layer)
     {
+        this->current_iteration = 0;
         this->training_data = {};
         this->match_range =0.1;
         this->meth_type=meth_type;
@@ -65,6 +66,7 @@ namespace cx {
     }
 
     void neural_network::initialize_data(vector<map<value_type, vector<int>>> data) {
+        training_data.clear();
         for (map<value_type , vector<int>> instance : data) {
             data_holder dataHolder;
             dataHolder.add_input(instance.at(INPUT));
