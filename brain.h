@@ -34,7 +34,7 @@ namespace cx {
 
         data_holder unload();
 
-        vector<neuron> get_layer(int layer_nb);
+        vector<neuron> &get_layer(int layer_nb);
 
         map<string, double> actual_weights();
 
@@ -162,7 +162,7 @@ namespace cx {
         return dataHolder;
     }
 
-    vector<neuron> brain::get_layer(int layer_nb) {
+    vector<neuron> &brain::get_layer(int layer_nb) {
         return this->layers.at(layer_nb);
     }
 

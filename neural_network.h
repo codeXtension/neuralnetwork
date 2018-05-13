@@ -155,7 +155,7 @@ namespace cx {
     void neural_network::eval_fwd_propagation(brain &brain_instance) {
         for (int i = 1; i < current_brain.getLayers().size(); i++) {
             for (unsigned long j = 0; j < current_brain.get_layer(i).size(); j++) {
-                neuron hidden_neuron = current_brain.get_layer(i).at(j);
+                neuron &hidden_neuron = current_brain.get_layer(i).at(j);
                 double value = 0.0;
                 if (hidden_neuron.getId().find("BN") == string::npos) {
                     for (synapse synapse_instance : hidden_neuron.getIncoming_synapse()) {
