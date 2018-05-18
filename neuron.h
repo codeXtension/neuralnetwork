@@ -37,11 +37,11 @@ namespace cx {
 
         bool operator!=(neuron rhs);
 
-        virtual void setIncoming_synapse(vector<synapse> incoming_synapse);
+        virtual void setIncomingSynapse(vector<synapse> incoming_synapse);
 
-        vector<synapse> &getOutgoing_synapse();
+        vector<synapse> &getOutgoingSynapse();
 
-        void setOutgoing_synapse(vector<synapse> outgoing_synapse);
+        void setOutgoingSynapse(vector<synapse> outgoing_synapse);
 
         double getValue();
 
@@ -55,9 +55,9 @@ namespace cx {
 
         virtual double activationPrimeValue();
 
-        void add_outgoing_synapse(synapse *pSynapse);
+        void addOutgoingSynapse(synapse *pSynapse);
 
-        virtual void add_incoming_synapse(synapse *pSynapse);
+        virtual void addIncomingSynapse(synapse *pSynapse);
     };
 
     class bias_neuron : public neuron {
@@ -72,9 +72,9 @@ namespace cx {
 
         void setValue(double value) override;
 
-        void setIncoming_synapse(vector<synapse> incoming_synapse) override;
+        void setIncomingSynapse(vector<synapse> incoming_synapse) override;
 
-        void add_incoming_synapse(synapse *pSynapse) override;
+        void addIncomingSynapse(synapse *pSynapse) override;
 
     };
 
@@ -82,7 +82,7 @@ namespace cx {
         this->value = 1;
     }
 
-    void bias_neuron::setIncoming_synapse(vector<synapse> incoming_synapse) {
+    void bias_neuron::setIncomingSynapse(vector<synapse> incoming_synapse) {
 
     }
 
@@ -103,7 +103,7 @@ namespace cx {
         cout << "BiasNeuron created with id " << id << endl;
     }
 
-    void bias_neuron::add_incoming_synapse(synapse *pSynapse) {
+    void bias_neuron::addIncomingSynapse(synapse *pSynapse) {
     }
 
     neuron::neuron() {
@@ -113,15 +113,15 @@ namespace cx {
         return incoming_synapse;
     }
 
-    void neuron::setIncoming_synapse(vector<synapse> incoming_synapse) {
+    void neuron::setIncomingSynapse(vector<synapse> incoming_synapse) {
         neuron::incoming_synapse = incoming_synapse;
     }
 
-    vector<synapse> &neuron::getOutgoing_synapse() {
+    vector<synapse> &neuron::getOutgoingSynapse() {
         return outgoing_synapse;
     }
 
-    void neuron::setOutgoing_synapse(vector<synapse> outgoing_synapse) {
+    void neuron::setOutgoingSynapse(vector<synapse> outgoing_synapse) {
         neuron::outgoing_synapse = outgoing_synapse;
     }
 
@@ -170,11 +170,11 @@ namespace cx {
         cout << "Neuron created with id " << id << endl;
     }
 
-    void neuron::add_outgoing_synapse(synapse *pSynapse) {
+    void neuron::addOutgoingSynapse(synapse *pSynapse) {
         this->outgoing_synapse.push_back(*pSynapse);
     }
 
-    void neuron::add_incoming_synapse(synapse *pSynapse) {
+    void neuron::addIncomingSynapse(synapse *pSynapse) {
         this->incoming_synapse.push_back(*pSynapse);
     }
 }

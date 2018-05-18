@@ -54,10 +54,10 @@ namespace cx {
                     input.push_back(char_array[i]-'0');
 
                 if(x==1) {
-                    results.insert(pair<value_type, vector<int>>(INPUT, input));
+                    results.insert(pair<value_type, vector<int>>(OUTPUT, input));
                     x++;
                 }else{
-                    results.insert(pair<value_type, vector<int>>(OUTPUT, input));
+                    results.insert(pair<value_type, vector<int>>(INPUT, input));
                     x--;
                 }
                 cout<<endl;
