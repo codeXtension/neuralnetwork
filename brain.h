@@ -130,8 +130,8 @@ namespace cx {
         this->expected_output_values = test_data_holder.getExpected_outputs();
 
         for (int i = 0; i < layers.size(); i++) {
-            vector<neuron> sources = layers.at(i);
-            for (neuron source : sources) {
+            vector<neuron> &sources = layers.at(i);
+            for (neuron &source : sources) {
                 if (test_data_holder.getValues().count(source.getId()) > 0) {
                     source.setValue(test_data_holder.getValues().at(source.getId()));
                 }

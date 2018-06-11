@@ -35,3 +35,9 @@ cmake-build-debug
 cmake-build-debug/**
 .idea
 .idea/**
+/.metadata/
+/Default/
+
+/CMakeFiles/**
+/.vscode/**
+/cmake-**

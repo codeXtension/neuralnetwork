@@ -60,7 +60,6 @@ namespace cx {
                     results.insert(pair<value_type, vector<int>>(INPUT, input));
                     x--;
                 }
-                cout<<endl;
             }
             output.push_back(results);
         }
@@ -127,8 +126,8 @@ namespace cx {
     }
 
     void data_holder::add_input(vector<int> &inputs) {
-        for (int i = 0; i < inputs.size(); i++) {
-            int input = inputs.at(i);
+        for (int i = 1; i <= inputs.size(); i++) {
+            int input = inputs.at(i - 1);
             string node_name = "N1." + to_string(i);
             this->values.insert(pair<string, int>(node_name, input));
         }

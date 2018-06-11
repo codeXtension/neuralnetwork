@@ -71,8 +71,9 @@ namespace cx {
             for (neuron source : sources) {
                 for (synapse synapse : source.getOutgoingSynapse()) {
                     neuron *target = synapse.getTarget();
-                    cout << "BRAIN - " << source.getId() << " ---" << synapse.getWeight() << "---> " << target->getId()
-                         << " a(" << target->activationValue() << ")" << endl;
+                    cout << "BRAIN - " << source.getId() << " [" << source.getValue() << "] ---" << synapse.getWeight()
+                         << "---> " << target->getId() << " [" << target->getValue() << "] a("
+                         << target->activationValue() << ")" << endl;
                 }
             }
         }
@@ -82,7 +83,7 @@ namespace cx {
                                    int output_size, int nb_hidden_layers, int size_hidden_layer) {
         this->current_iteration = 0;
         this->training_data = {};
-        this->match_range = 0.2;
+        this->match_range = 0.001;
         this->meth_type = meth_type;
         this->with_bias = with_bias;
         this->nb_hidden_layers = nb_hidden_layers;
@@ -126,8 +127,8 @@ namespace cx {
     bool neural_network::not_all_true(vector<bool> states) {
         bool result = true;
 
-        for (int i = 0; i < states.size(); i++) {
-            result &= states[i];
+        for (auto &&state : states) {
+            result &= state;
         }
 
         return !result;
@@ -162,6 +163,8 @@ namespace cx {
                 map<string, vector<double>> gradients = eval_gradients();
                 auto d_weights = delta_weights(gradients);
                 update_weights(d_weights);
+                this->log_weights(current_brain);
+
                 instanceState[u] = values_matching(current_brain.getOutputs(),
                                                    current_brain.getExpectedOutputValues());
             }
@@ -171,8 +174,7 @@ namespace cx {
 
     void neural_network::eval_fwd_propagation() {
         for (int i = 1; i < current_brain.getLayers().size(); i++) {
-            for (unsigned long j = 0; j < current_brain.getLayerAt(i).size(); j++) {
-                neuron &hidden_neuron = current_brain.getLayerAt(i).at(j);
+            for (auto &hidden_neuron : current_brain.getLayerAt(i)) {
                 double value = 0.0;
                 if (hidden_neuron.getId().find("BN") == string::npos) {
                     for (synapse synapse_instance : hidden_neuron.getIncoming_synapse()) {
@@ -188,10 +190,10 @@ namespace cx {
         map<string, double> deltasWeight;
         for (int i = current_brain.getLayers().size() - 2; i >= 0; i--) {
             for (int j = 0; j < current_brain.getLayerAt(i).size(); j++) {
-                neuron neuron_instance = current_brain.getLayerAt(i).at(j);
+                neuron &neuron_instance = current_brain.getLayerAt(i).at(j);
                 vector<double> values = gradients.at("hidden_" + to_string(i + 1));
                 for (int s = 0; s < neuron_instance.getOutgoingSynapse().size(); s++) {
-                    synapse synapse_instance = neuron_instance.getOutgoingSynapse().at(s);
+                    synapse &synapse_instance = neuron_instance.getOutgoingSynapse().at(s);
                     double delta_weight = values[s] * neuron_instance.activationValue();
                     deltasWeight.insert(pair<string, double>(synapse_instance.getId(), delta_weight));
                 }
@@ -212,6 +214,7 @@ namespace cx {
                 }
             }
         }
+        cout << "";
     }
 
     map<string, vector<double>> neural_network::eval_gradients() {
