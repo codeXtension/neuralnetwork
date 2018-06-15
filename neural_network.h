@@ -73,17 +73,19 @@ namespace cx {
                     neuron *target = synapse.getTarget();
                     cout << "BRAIN - " << source.getId() << " [" << source.getValue() << "] ---" << synapse.getWeight()
                          << "---> " << target->getId() << " [" << target->getValue() << "] a("
-                         << target->activationValue() << ")" << endl;
+                         << target->activationValue() << ")" << " <-->" << value.getExpectedOutputValues().at(0)
+                         << endl;
                 }
             }
         }
+        cout << endl;
     }
 
     neural_network::neural_network(bool with_bias, double learning_rate, method_type meth_type, int input_size,
                                    int output_size, int nb_hidden_layers, int size_hidden_layer) {
         this->current_iteration = 0;
         this->training_data = {};
-        this->match_range = 0.001;
+        this->match_range = 0.1;
         this->meth_type = meth_type;
         this->with_bias = with_bias;
         this->nb_hidden_layers = nb_hidden_layers;
@@ -91,7 +93,7 @@ namespace cx {
         this->learning_rate = learning_rate;
         current_brain = brain(input_size, output_size, nb_hidden_layers, size_hidden_layer, with_bias);
 
-        log_weights(current_brain);
+        //log_weights(current_brain);
     }
 
     void neural_network::initialize_data(vector<map<value_type, vector<int>>> data) {
@@ -127,9 +129,12 @@ namespace cx {
     bool neural_network::not_all_true(vector<bool> states) {
         bool result = true;
 
+        cout << "Current states: ";
         for (auto &&state : states) {
             result &= state;
+            cout << state;
         }
+        cout << endl;
 
         return !result;
     }
@@ -157,14 +162,15 @@ namespace cx {
         }
         while (not_all_true(instanceState) && current_iteration < max_nb_iterations) {
             current_iteration++;
+            cout << "running iteration " << current_iteration << endl;
             for (int u = 0; u < training_data.size(); u++) {
+                cout << "running iteration " << current_iteration << " - training data " << u + 1 << endl;
                 current_brain.load(training_data.at(u), true);
                 eval_fwd_propagation();
                 map<string, vector<double>> gradients = eval_gradients();
                 auto d_weights = delta_weights(gradients);
                 update_weights(d_weights);
                 this->log_weights(current_brain);
-
                 instanceState[u] = values_matching(current_brain.getOutputs(),
                                                    current_brain.getExpectedOutputValues());
             }
@@ -214,7 +220,6 @@ namespace cx {
                 }
             }
         }
-        cout << "";
     }
 
     map<string, vector<double>> neural_network::eval_gradients() {
