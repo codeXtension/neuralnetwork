@@ -4,10 +4,12 @@
 using namespace cx;
 
 int main() {
-    neural_network network = neural_network(true, 0.7, SGD, 2, 1, 1, 5);
+    cout.precision(17);
+
+    neural_network network = neural_network(false, 0.7, SGD, 2, 1, 1, 5);
     auto out = cx::readFile("/home/elie/Workspaces/machine-learning/src/main/resources/nn/training.dat");
     network.initialize_data(out);
-    cout << "number of iterations: " << network.think(1000);
+    cout << "number of iterations: " << network.think(10);
     return 0;
 }
 

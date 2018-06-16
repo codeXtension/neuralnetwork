@@ -21,7 +21,7 @@ namespace cx {
 
     class neuron {
     protected:
-        double value = 0;
+        double value = 0.0;
         string id;
     private:
         vector<synapse> incoming_synapse;
@@ -39,7 +39,7 @@ namespace cx {
 
         virtual void setIncomingSynapse(vector<synapse> incoming_synapse);
 
-        vector<synapse> &getOutgoingSynapse();
+        vector<synapse> getOutgoing_synapse();
 
         void setOutgoingSynapse(vector<synapse> outgoing_synapse);
 
@@ -117,7 +117,7 @@ namespace cx {
         neuron::incoming_synapse = incoming_synapse;
     }
 
-    vector<synapse> &neuron::getOutgoingSynapse() {
+    vector<synapse> neuron::getOutgoing_synapse() {
         return outgoing_synapse;
     }
 

@@ -20,7 +20,7 @@ namespace cx {
 
     private:
         string id;
-        double weight = 0;
+        double weight = 0.0;
         neuron *source;
         neuron *target;
 

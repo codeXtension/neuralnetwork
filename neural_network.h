@@ -36,7 +36,7 @@ namespace cx {
         void guess();
 
     private:
-        brain current_brain = brain(0, 0, 0, 0, true);
+        brain current_brain = brain(0, 0, 0, 0, false);
 
         int think_batch(long max_nb_iterations);
 
@@ -69,7 +69,7 @@ namespace cx {
             vector<neuron> sources = value.getLayers().at(i);
             cout << "BRAIN - Synapses from layer " << (i + 1) << " --> " << (i + 2) << endl;
             for (neuron source : sources) {
-                for (synapse synapse : source.getOutgoingSynapse()) {
+                for (synapse synapse : source.getOutgoing_synapse()) {
                     neuron *target = synapse.getTarget();
                     cout << "BRAIN - " << source.getId() << " [" << source.getValue() << "] ---" << synapse.getWeight()
                          << "---> " << target->getId() << " [" << target->getValue() << "] a("
@@ -168,7 +168,7 @@ namespace cx {
                 current_brain.load(training_data.at(u), true);
                 eval_fwd_propagation();
                 map<string, vector<double>> gradients = eval_gradients();
-                auto d_weights = delta_weights(gradients);
+                map<string, double> d_weights = delta_weights(gradients);
                 update_weights(d_weights);
                 this->log_weights(current_brain);
                 instanceState[u] = values_matching(current_brain.getOutputs(),
@@ -180,13 +180,22 @@ namespace cx {
 
     void neural_network::eval_fwd_propagation() {
         for (int i = 1; i < current_brain.getLayers().size(); i++) {
-            for (auto &hidden_neuron : current_brain.getLayerAt(i)) {
+            cout << "FWD - Reading layer " << i + 1 << endl;
+            for (neuron &hidden_neuron : current_brain.getLayerAt(i)) {
                 double value = 0.0;
                 if (hidden_neuron.getId().find("BN") == string::npos) {
+                    cout << "FWD - Reading " << hidden_neuron.getId() << " in layer " << i + 1 << endl;
                     for (synapse synapse_instance : hidden_neuron.getIncoming_synapse()) {
+                        cout << "FWD - Incrementing " << hidden_neuron.getId() << " value [v=v_old+w("
+                             << synapse_instance.getId() << ")*a(" << synapse_instance.getSource()->getId()
+                             << ")] --> v=" << value << "+" << synapse_instance.getWeight() << "*"
+                             << synapse_instance.getSource()->activationValue() << endl;
                         value += synapse_instance.getWeight() * synapse_instance.getSource()->activationValue();
                     }
                     hidden_neuron.setValue(value);
+                    current_brain.update_value(hidden_neuron.getId(), value);
+                    cout << "FWD - Final " << hidden_neuron.getId() << " value is " << value << " (a="
+                         << hidden_neuron.activationValue() << ")" << endl;
                 }
             }
         }
@@ -196,10 +205,10 @@ namespace cx {
         map<string, double> deltasWeight;
         for (int i = current_brain.getLayers().size() - 2; i >= 0; i--) {
             for (int j = 0; j < current_brain.getLayerAt(i).size(); j++) {
-                neuron &neuron_instance = current_brain.getLayerAt(i).at(j);
+                neuron neuron_instance = current_brain.getLayerAt(i).at(j);
                 vector<double> values = gradients.at("hidden_" + to_string(i + 1));
-                for (int s = 0; s < neuron_instance.getOutgoingSynapse().size(); s++) {
-                    synapse &synapse_instance = neuron_instance.getOutgoingSynapse().at(s);
+                for (int s = 0; s < neuron_instance.getOutgoing_synapse().size(); s++) {
+                    synapse synapse_instance = neuron_instance.getOutgoing_synapse().at(s);
                     double delta_weight = values[s] * neuron_instance.activationValue();
                     deltasWeight.insert(pair<string, double>(synapse_instance.getId(), delta_weight));
                 }
@@ -210,13 +219,22 @@ namespace cx {
 
     void neural_network::update_weights(map<string, double> deltas) {
         for (int i = current_brain.getLayers().size() - 2; i >= 0; i--) {
+            cout << "BACK - WEIGHT - Updating weights for layer " << i + 1 << endl;
             for (int j = 0; j < current_brain.getLayerAt(i).size(); j++) {
-                neuron &neuron_instance = current_brain.getLayerAt(i).at(j);
-                for (int s = 0; s < neuron_instance.getOutgoingSynapse().size(); s++) {
-                    synapse &synapse_instance = neuron_instance.getOutgoingSynapse().at(s);
+                neuron neuron_instance = current_brain.getLayerAt(i).at(j);
+                for (int s = 0; s < neuron_instance.getOutgoing_synapse().size(); s++) {
+                    synapse synapse_instance = neuron_instance.getOutgoing_synapse().at(s);
                     double weight =
                             synapse_instance.getWeight() - (learning_rate * deltas.at(synapse_instance.getId()));
-                    synapse_instance.setWeight(weight);
+                    //synapse_instance.setWeight(weight);
+                    current_brain.update_weight(synapse_instance.getId(), 9999);
+
+                    cout << "BACK - DELTA_WEIGHT - DW[" << synapse_instance.getId() << "] = Delta["
+                         << deltas.at(synapse_instance.getId()) << "] * Act" << neuron_instance.getId() << "["
+                         << neuron_instance.activationValue() << "]" << endl;
+                    cout << "BACK - WEIGHT - Synapse " << synapse_instance.getId() << " new weight is OLDW("
+                         << synapse_instance.getWeight() << ")-(LR(" << learning_rate << ")*DW("
+                         << deltas.at(synapse_instance.getId()) << ")) => " << weight << endl;
                 }
             }
         }
@@ -235,8 +253,8 @@ namespace cx {
                             neuron_instance.activationPrimeValue());
                 } else {
                     double dhs = 0;
-                    for (int j = 0; j < neuron_instance.getOutgoingSynapse().size(); j++) {
-                        synapse synapse_instance = neuron_instance.getOutgoingSynapse().at(j);
+                    for (int j = 0; j < neuron_instance.getOutgoing_synapse().size(); j++) {
+                        synapse synapse_instance = neuron_instance.getOutgoing_synapse().at(j);
                         dhs += deltas.at("hidden_" + to_string(i + 1))[j] * synapse_instance.getWeight();
                     }
                     deltaHiddenSum.push_back(dhs * neuron_instance.activationPrimeValue());
