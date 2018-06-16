@@ -36,7 +36,7 @@ namespace cx {
         void guess();
 
     private:
-        brain current_brain = brain(0, 0, 0, 0, false);
+        brain current_brain = brain(0, 0, 0, 0, true);
 
         int think_batch(long max_nb_iterations);
 
@@ -73,7 +73,7 @@ namespace cx {
                     neuron *target = synapse.getTarget();
                     cout << "BRAIN - " << source.getId() << " [" << source.getValue() << "] ---" << synapse.getWeight()
                          << "---> " << target->getId() << " [" << target->getValue() << "] a("
-                         << target->activationValue() << ")" << " <-->" << value.getExpectedOutputValues().at(0)
+                         << target->activationValue() << ")"
                          << endl;
                 }
             }
