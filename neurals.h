@@ -273,7 +273,7 @@ namespace cx {
     void brain::create_synapses() {
         random_device rd;
         mt19937 mt(rd());
-        uniform_real_distribution<double> dist(0.1, 0.95);
+        uniform_real_distribution<double> dist(0.1, 0.99);
 
         for (int i = 0; i < this->layers.size() - 1; i++) {
             vector<neuron> &sources = layers.at(i);
