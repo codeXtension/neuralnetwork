@@ -25,10 +25,7 @@ namespace cx {
     public:
         double value = 0.0;
         string id;
-        vector<synapse> incoming_synapse;
         vector<synapse> outgoing_synapse;
-
-        neuron();
 
         explicit neuron(string id);
 

@@ -17,9 +17,6 @@ using namespace std;
 
 namespace cx {
 
-    neuron::neuron() {
-    }
-
     bool neuron::operator==(neuron rhs) {
         return id == rhs.id;
     }
@@ -29,7 +26,7 @@ namespace cx {
     }
 
     double neuron::activationPrimeValue() {
-        if (!this->incoming_synapse.empty()) {
+        if (this->id.find("BN") == string::npos || this->id.find("N1.") == string::npos) {
             return derivativeSigmoid(value);
         } else {
             return value;
@@ -37,7 +34,7 @@ namespace cx {
     }
 
     double neuron::activationValue() {
-        if (!this->incoming_synapse.empty()) {
+        if (this->id.find("BN") == string::npos || this->id.find("N1.") == string::npos) {
             return sigmoid(value);
         } else {
             return value;
@@ -162,7 +159,7 @@ namespace cx {
         }
         while (not_all_true(instanceState) && current_iteration < max_nb_iterations) {
             current_iteration++;
-            cout << "running iteration " << current_iteration << endl;
+            cout << "EPOC " << current_iteration << endl;
             for (int u = 0; u < training_data.size(); u++) {
                 cout << "EPOC " << current_iteration << " - training data " << u + 1 << endl;
                 current_brain.load(training_data.at(u), true);
@@ -180,17 +177,21 @@ namespace cx {
 
     void neural_network::eval_fwd_propagation() {
         for (int i = 1; i < current_brain.layers.size(); i++) {
-            cout << "FWD - Reading layer " << i + 1 << endl;
+            cout << "FWD - Reading layer " << i << endl;
             for (neuron hidden_neuron : current_brain.layers[i]) {
                 double value = 0.0;
                 if (hidden_neuron.id.find("BN") == string::npos) {
-                    cout << "FWD - Reading " << hidden_neuron.id << " in layer " << i + 1 << endl;
-                    for (synapse synapse_instance : hidden_neuron.incoming_synapse) {
-                        cout << "FWD - Incrementing " << hidden_neuron.id << " value [v=v_old+w("
-                             << synapse_instance.id << ")*a(" << synapse_instance.source->id
-                             << ")] --> v=" << value << "+" << synapse_instance.weight << "*"
-                             << synapse_instance.source->activationValue() << endl;
-                        value += synapse_instance.weight * synapse_instance.source->activationValue();
+                    cout << "FWD - Reading " << hidden_neuron.id << " in layer " << i << endl;
+                    for (neuron prev_neuro : current_brain.layers[i - 1]) {
+                        for (synapse synapse_instance : prev_neuro.outgoing_synapse) {
+                            if (synapse_instance.id.find(hidden_neuron.id) != string::npos) {
+                                cout << "FWD - Incrementing " << hidden_neuron.id << " value [v=v_old+w("
+                                     << synapse_instance.id << ")*a(" << synapse_instance.source->id
+                                     << ")] --> v=" << value << "+" << synapse_instance.weight << "*"
+                                     << synapse_instance.source->activationValue() << endl;
+                                value += synapse_instance.weight * synapse_instance.source->activationValue();
+                            }
+                        }
                     }
                     hidden_neuron.value = value;
                     current_brain.update_value(hidden_neuron.id, value);
@@ -286,7 +287,6 @@ namespace cx {
                         double value = (dist(mt) * 78 + 20) / 100;
                         synapse _synapse_ = synapse(value, &source, &target);
                         source.outgoing_synapse.push_back(_synapse_);
-                        target.incoming_synapse.push_back(_synapse_);
                     }
                 }
             }
