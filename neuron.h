@@ -39,10 +39,6 @@ namespace cx {
         double activationValue();
 
         double activationPrimeValue();
-
-        void addOutgoingSynapse(synapse *pSynapse);
-
-        void addIncomingSynapse(synapse *pSynapse);
     };
 }
 #endif //NEURALNETWORK_NEURON_H

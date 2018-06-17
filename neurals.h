@@ -49,14 +49,6 @@ namespace cx {
         cout << "Neuron created with id " << id << endl;
     }
 
-    void neuron::addOutgoingSynapse(synapse *pSynapse) {
-        this->outgoing_synapse.push_back(*pSynapse);
-    }
-
-    void neuron::addIncomingSynapse(synapse *pSynapse) {
-        this->incoming_synapse.push_back(*pSynapse);
-    }
-
     bool synapse::operator==(synapse rhs) {
         return id == rhs.id;
     }
@@ -172,7 +164,7 @@ namespace cx {
             current_iteration++;
             cout << "running iteration " << current_iteration << endl;
             for (int u = 0; u < training_data.size(); u++) {
-                cout << "running iteration " << current_iteration << " - training data " << u + 1 << endl;
+                cout << "EPOC " << current_iteration << " - training data " << u + 1 << endl;
                 current_brain.load(training_data.at(u), true);
                 eval_fwd_propagation();
                 map<string, vector<double>> gradients = eval_gradients();
@@ -189,7 +181,7 @@ namespace cx {
     void neural_network::eval_fwd_propagation() {
         for (int i = 1; i < current_brain.layers.size(); i++) {
             cout << "FWD - Reading layer " << i + 1 << endl;
-            for (neuron &hidden_neuron : current_brain.layers[i]) {
+            for (neuron hidden_neuron : current_brain.layers[i]) {
                 double value = 0.0;
                 if (hidden_neuron.id.find("BN") == string::npos) {
                     cout << "FWD - Reading " << hidden_neuron.id << " in layer " << i + 1 << endl;
@@ -234,8 +226,6 @@ namespace cx {
                     synapse synapse_instance = neuron_instance.outgoing_synapse[s];
                     double weight =
                             synapse_instance.weight - (learning_rate * deltas.at(synapse_instance.id));
-                    synapse_instance.weight = weight;
-                    current_brain.layers[i][j].outgoing_synapse[s] = synapse_instance;
 
                     cout << "BACK - DELTA_WEIGHT - DW[" << synapse_instance.id << "] = Delta["
                          << deltas.at(synapse_instance.id) << "] * Act" << neuron_instance.id << "["
@@ -243,6 +233,9 @@ namespace cx {
                     cout << "BACK - WEIGHT - Synapse " << synapse_instance.id << " new weight is OLDW("
                          << synapse_instance.weight << ")-(LR(" << learning_rate << ")*DW("
                          << deltas.at(synapse_instance.id) << ")) => " << weight << endl;
+
+                    synapse_instance.weight = weight;
+                    current_brain.layers[i][j].outgoing_synapse[s] = synapse_instance;
                 }
             }
         }
@@ -270,6 +263,11 @@ namespace cx {
             }
             string label = "hidden_" + to_string(i);
             deltas.insert(pair<string, vector<double>>(label, deltaHiddenSum));
+
+            cout << "GRADIENT - Layer " << i + 1 << " -> ";
+            for (auto i = deltaHiddenSum.begin(); i != deltaHiddenSum.end(); ++i)
+                std::cout << *i << ' ';
+            cout << endl;
         }
         return deltas;
     }
@@ -287,8 +285,8 @@ namespace cx {
                     if (target.id.find("BN") == string::npos) {
                         double value = (dist(mt) * 78 + 20) / 100;
                         synapse _synapse_ = synapse(value, &source, &target);
-                        source.addOutgoingSynapse(&_synapse_);
-                        target.addIncomingSynapse(&_synapse_);
+                        source.outgoing_synapse.push_back(_synapse_);
+                        target.incoming_synapse.push_back(_synapse_);
                     }
                 }
             }
