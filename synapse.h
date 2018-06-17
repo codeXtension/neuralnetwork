@@ -47,53 +47,5 @@ namespace cx {
 
         void setTarget(neuron *target);
     };
-
-    bool synapse::operator==(synapse rhs) {
-        return id == rhs.id;
-    }
-
-    bool synapse::operator!=(synapse rhs) {
-        return rhs.id != this->id;
-    }
-
-    string synapse::getId() {
-        return id;
-    }
-
-    void synapse::setId(string id) {
-        synapse::id = id;
-    }
-
-    double synapse::getWeight() {
-        return weight;
-    }
-
-    void synapse::setWeight(double weight) {
-        synapse::weight = weight;
-    }
-
-    neuron *synapse::getSource() const {
-        return source;
-    }
-
-    void synapse::setSource(neuron *source) {
-        synapse::source = source;
-    }
-
-    neuron *synapse::getTarget() const {
-        return target;
-    }
-
-    void synapse::setTarget(neuron *target) {
-        synapse::target = target;
-    }
-
-
-    synapse::synapse(double weight, neuron *source, neuron *target) {
-        this->id = source->getId() + "-" + target->getId();
-        this->weight = weight;
-        this->source = source;
-        this->target = target;
-    }
 }
 #endif //NEURALNETWORK_SYNAPSE_H

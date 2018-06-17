@@ -22,13 +22,14 @@ using namespace std;
 namespace cx {
     class brain {
     private:
-        map<int, vector<neuron>> layers;
         vector<int> expected_output_values;
 
         void create_synapses();
 
     public:
         brain(int in_size, int out_size, int nb_hidden_layers, int hidden_layer_size, bool with_bias);
+
+        map<int, vector<neuron>> layers;
 
         void load(data_holder &test_data_holder, bool ignore_weights);
 
@@ -47,8 +48,6 @@ namespace cx {
         void setExpectedOutputValues(vector<int> expected_output_values);
 
         void update_value(const string &neuron_id, double val);
-
-        void update_weight(const string &synapse_id, double weight);
     };
 
     map<int, vector<neuron>> brain::getLayers() {
@@ -190,19 +189,6 @@ namespace cx {
                 if (source.getId() == neuron_id) {
                     source.setValue(val);
                     return;
-                }
-            }
-        }
-    }
-
-    void brain::update_weight(const string &synapse_id, double weight) {
-        for (int i = 0; i < this->layers.size() - 1; i++) {
-            for (neuron &source : this->layers.at(i)) {
-                for (synapse &synapse : source.getOutgoing_synapse()) {
-                    if (synapse.getId() == synapse_id) {
-                        synapse.setWeight(weight);
-                        return;
-                    }
                 }
             }
         }

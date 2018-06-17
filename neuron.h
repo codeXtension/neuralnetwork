@@ -25,9 +25,10 @@ namespace cx {
         string id;
     private:
         vector<synapse> incoming_synapse;
-        vector<synapse> outgoing_synapse;
     public:
         neuron();
+
+        vector<synapse> outgoing_synapse;
 
         explicit neuron(string id);
 
@@ -77,105 +78,5 @@ namespace cx {
         void addIncomingSynapse(synapse *pSynapse) override;
 
     };
-
-    bias_neuron::bias_neuron() {
-        this->value = 1;
-    }
-
-    void bias_neuron::setIncomingSynapse(vector<synapse> incoming_synapse) {
-
-    }
-
-    void bias_neuron::setValue(double value) {
-
-    }
-
-    double bias_neuron::activationPrimeValue() {
-        return neuron::getValue();
-    }
-
-    double bias_neuron::activationValue() {
-        return neuron::getValue();
-    }
-
-    bias_neuron::bias_neuron(string id) {
-        this->id = id;
-        cout << "BiasNeuron created with id " << id << endl;
-    }
-
-    void bias_neuron::addIncomingSynapse(synapse *pSynapse) {
-    }
-
-    neuron::neuron() {
-    }
-
-    vector<synapse> neuron::getIncoming_synapse() {
-        return incoming_synapse;
-    }
-
-    void neuron::setIncomingSynapse(vector<synapse> incoming_synapse) {
-        neuron::incoming_synapse = incoming_synapse;
-    }
-
-    vector<synapse> neuron::getOutgoing_synapse() {
-        return outgoing_synapse;
-    }
-
-    void neuron::setOutgoingSynapse(vector<synapse> outgoing_synapse) {
-        neuron::outgoing_synapse = outgoing_synapse;
-    }
-
-    double neuron::getValue() {
-        return value;
-    }
-
-    void neuron::setValue(double value) {
-        neuron::value = value;
-    }
-
-    string neuron::getId() {
-        return id;
-    }
-
-    void neuron::setId(string id) {
-        neuron::id = id;
-    }
-
-    bool neuron::operator==(neuron rhs) {
-        return id == rhs.id;
-    }
-
-    bool neuron::operator!=(neuron rhs) {
-        return !(rhs == *this);
-    }
-
-    double neuron::activationPrimeValue() {
-        if (!this->incoming_synapse.empty()) {
-            return derivativeSigmoid(value);
-        } else {
-            return value;
-        }
-    }
-
-    double neuron::activationValue() {
-        if (!this->incoming_synapse.empty()) {
-            return sigmoid(value);
-        } else {
-            return value;
-        }
-    }
-
-    neuron::neuron(string id) {
-        this->id = id;
-        cout << "Neuron created with id " << id << endl;
-    }
-
-    void neuron::addOutgoingSynapse(synapse *pSynapse) {
-        this->outgoing_synapse.push_back(*pSynapse);
-    }
-
-    void neuron::addIncomingSynapse(synapse *pSynapse) {
-        this->incoming_synapse.push_back(*pSynapse);
-    }
 }
 #endif //NEURALNETWORK_NEURON_H

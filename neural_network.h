@@ -14,8 +14,7 @@
 #include <sstream>
 #include <climits>
 #include "brain.h"
-#include "synapse.h"
-#include "neuron.h"
+#include "neurals.h"
 
 using namespace std;
 
@@ -180,22 +179,22 @@ namespace cx {
 
     void neural_network::eval_fwd_propagation() {
         for (int i = 1; i < current_brain.getLayers().size(); i++) {
-            cout << "FWD - Reading layer " << i + 1 << endl;
+            //cout << "FWD - Reading layer " << i + 1 << endl;
             for (neuron &hidden_neuron : current_brain.getLayerAt(i)) {
                 double value = 0.0;
                 if (hidden_neuron.getId().find("BN") == string::npos) {
-                    cout << "FWD - Reading " << hidden_neuron.getId() << " in layer " << i + 1 << endl;
+                    // cout << "FWD - Reading " << hidden_neuron.getId() << " in layer " << i + 1 << endl;
                     for (synapse synapse_instance : hidden_neuron.getIncoming_synapse()) {
-                        cout << "FWD - Incrementing " << hidden_neuron.getId() << " value [v=v_old+w("
+/*                        cout << "FWD - Incrementing " << hidden_neuron.getId() << " value [v=v_old+w("
                              << synapse_instance.getId() << ")*a(" << synapse_instance.getSource()->getId()
                              << ")] --> v=" << value << "+" << synapse_instance.getWeight() << "*"
-                             << synapse_instance.getSource()->activationValue() << endl;
+                             << synapse_instance.getSource()->activationValue() << endl;*/
                         value += synapse_instance.getWeight() * synapse_instance.getSource()->activationValue();
                     }
                     hidden_neuron.setValue(value);
                     current_brain.update_value(hidden_neuron.getId(), value);
-                    cout << "FWD - Final " << hidden_neuron.getId() << " value is " << value << " (a="
-                         << hidden_neuron.activationValue() << ")" << endl;
+                    /*                   cout << "FWD - Final " << hidden_neuron.getId() << " value is " << value << " (a="
+                                            << hidden_neuron.activationValue() << ")" << endl;*/
                 }
             }
         }
@@ -219,22 +218,22 @@ namespace cx {
 
     void neural_network::update_weights(map<string, double> deltas) {
         for (int i = current_brain.getLayers().size() - 2; i >= 0; i--) {
-            cout << "BACK - WEIGHT - Updating weights for layer " << i + 1 << endl;
-            for (int j = 0; j < current_brain.getLayerAt(i).size(); j++) {
-                neuron neuron_instance = current_brain.getLayerAt(i).at(j);
+//            cout << "BACK - WEIGHT - Updating weights for layer " << i + 1 << endl;
+            for (int j = 0; j < current_brain.layers[i].size(); j++) {
+                neuron neuron_instance = current_brain.layers[i][j];
                 for (int s = 0; s < neuron_instance.getOutgoing_synapse().size(); s++) {
-                    synapse synapse_instance = neuron_instance.getOutgoing_synapse().at(s);
+                    synapse synapse_instance = neuron_instance.outgoing_synapse[s];
                     double weight =
                             synapse_instance.getWeight() - (learning_rate * deltas.at(synapse_instance.getId()));
-                    //synapse_instance.setWeight(weight);
-                    current_brain.update_weight(synapse_instance.getId(), 9999);
+                    synapse_instance.setWeight(weight);
+                    current_brain.layers[i][j].outgoing_synapse[s] = synapse_instance;
 
-                    cout << "BACK - DELTA_WEIGHT - DW[" << synapse_instance.getId() << "] = Delta["
+/*                    cout << "BACK - DELTA_WEIGHT - DW[" << synapse_instance.getId() << "] = Delta["
                          << deltas.at(synapse_instance.getId()) << "] * Act" << neuron_instance.getId() << "["
                          << neuron_instance.activationValue() << "]" << endl;
                     cout << "BACK - WEIGHT - Synapse " << synapse_instance.getId() << " new weight is OLDW("
                          << synapse_instance.getWeight() << ")-(LR(" << learning_rate << ")*DW("
-                         << deltas.at(synapse_instance.getId()) << ")) => " << weight << endl;
+                         << deltas.at(synapse_instance.getId()) << ")) => " << weight << endl;*/
                 }
             }
         }
