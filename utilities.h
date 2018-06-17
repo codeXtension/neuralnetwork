@@ -42,7 +42,7 @@ namespace cx {
         for (string line; getline(input_file, line);) {
             istringstream ss(line);
             map<value_type, vector<int>> results;
-            int x=1;
+            int x = 1;
             while (ss.good()) {
                 string s;
                 getline(ss, s, ';');
@@ -50,13 +50,13 @@ namespace cx {
                 int n = s.length();
                 char char_array[n];
                 strcpy(char_array, s.c_str());
-                for (int i=0; i<n; i++)
-                    input.push_back(char_array[i]-'0');
+                for (int i = 0; i < n; i++)
+                    input.push_back(char_array[i] - '0');
 
-                if(x==1) {
+                if (x == 1) {
                     results.insert(pair<value_type, vector<int>>(OUTPUT, input));
                     x++;
-                }else{
+                } else {
                     results.insert(pair<value_type, vector<int>>(INPUT, input));
                     x--;
                 }
@@ -68,62 +68,13 @@ namespace cx {
 
     class data_holder {
     public:
-        map<string, double> getWeights();
-
-        void setWeights(map<string, double> weights);
-
-        map<string, int> &getValues();
-
-        void setValues(map<string, int> &values);
-
-        vector<int> &getExpected_outputs();
-
-        void setExpected_outputs(vector<int> &expected_outputs);
-
-        vector<int> &getPrev_outputs();
-
-        void setPrev_outputs(vector<int> &prev_outputs);
-
         void add_input(vector<int> &inputs);
 
-    private:
         map<string, double> weights;
         map<string, int> values;
         vector<int> expected_outputs;
         vector<int> prev_outputs;
     };
-
-    map<string, double> data_holder::getWeights() {
-        return weights;
-    }
-
-    void data_holder::setWeights(map<string, double> weights) {
-        data_holder::weights = weights;
-    }
-
-    map<string, int> &data_holder::getValues() {
-        return values;
-    }
-
-    void data_holder::setValues(map<string, int> &values) {
-        data_holder::values = values;
-    }
-
-    vector<int> &data_holder::getExpected_outputs() {
-        return expected_outputs;
-    }
-
-    void data_holder::setExpected_outputs(vector<int> &expected_outputs) {
-        data_holder::expected_outputs = expected_outputs;
-    }
-
-    vector<int> &data_holder::getPrev_outputs() {
-        return prev_outputs;
-    }
-
-    void data_holder::setPrev_outputs(vector<int> &prev_outputs) {
-        data_holder::prev_outputs = prev_outputs;
-    }
 
     void data_holder::add_input(vector<int> &inputs) {
         for (int i = 1; i <= inputs.size(); i++) {

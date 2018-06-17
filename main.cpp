@@ -1,5 +1,5 @@
 
-#include "neural_network.h"
+#include "neurals.h"
 
 using namespace cx;
 

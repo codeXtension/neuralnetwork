@@ -18,34 +18,17 @@ using namespace std;
 namespace cx {
     class synapse {
 
-    private:
+    public:
         string id;
         double weight = 0.0;
         neuron *source;
         neuron *target;
 
-    public:
         synapse(double weight, neuron *source, neuron *target);
-
-        string getId();
-
-        void setId(string id);
-
-        double getWeight();
-
-        void setWeight(double weight);
 
         bool operator==(synapse rhs);
 
         bool operator!=(synapse rhs);
-
-        neuron *getSource() const;
-
-        void setSource(neuron *source);
-
-        neuron *getTarget() const;
-
-        void setTarget(neuron *target);
     };
 }
 #endif //NEURALNETWORK_SYNAPSE_H

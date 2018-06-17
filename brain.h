@@ -22,11 +22,11 @@ using namespace std;
 namespace cx {
     class brain {
     private:
-        vector<int> expected_output_values;
-
         void create_synapses();
 
     public:
+        vector<int> expected_output_values;
+
         brain(int in_size, int out_size, int nb_hidden_layers, int hidden_layer_size, bool with_bias);
 
         map<int, vector<neuron>> layers;
@@ -35,32 +35,10 @@ namespace cx {
 
         data_holder unload();
 
-        vector<neuron> getLayerAt(int layer_nb);
-
         map<string, double> actualWeights();
-
-        map<int, vector<neuron>> getLayers();
-
-        vector<neuron> getOutputs();
-
-        vector<int> getExpectedOutputValues();
-
-        void setExpectedOutputValues(vector<int> expected_output_values);
 
         void update_value(const string &neuron_id, double val);
     };
-
-    map<int, vector<neuron>> brain::getLayers() {
-        return layers;
-    }
-
-    vector<int> brain::getExpectedOutputValues() {
-        return expected_output_values;
-    }
-
-    void brain::setExpectedOutputValues(vector<int> expected_output_values) {
-        brain::expected_output_values = expected_output_values;
-    }
 
     void brain::create_synapses() {
         random_device rd;
@@ -72,7 +50,7 @@ namespace cx {
             vector<neuron> &targets = layers.at(i + 1);
             for (neuron &source : sources) {
                 for (neuron &target : targets) {
-                    if (target.getId().find("BN") == string::npos) {
+                    if (target.id.find("BN") == string::npos) {
                         double value = (dist(mt) * 78 + 20) / 100;
                         synapse _synapse_ = synapse(value, &source, &target);
                         source.addOutgoingSynapse(&_synapse_);
@@ -101,7 +79,7 @@ namespace cx {
             if (with_bias) {
                 stringstream id;
                 id << "BN" << (i + 1) << ".1";
-                neurons.emplace_back(bias_neuron(id.str()));
+                neurons.emplace_back(neuron(id.str()));
             }
             for (int j = 0; j < hidden_layer_size; j++) {
                 stringstream id;
@@ -124,18 +102,18 @@ namespace cx {
     }
 
     void brain::load(data_holder &test_data_holder, bool ignore_weights) {
-        this->expected_output_values = test_data_holder.getExpected_outputs();
+        this->expected_output_values = test_data_holder.expected_outputs;
 
         for (int i = 0; i < layers.size(); i++) {
             vector<neuron> &sources = layers.at(i);
             for (neuron &source : sources) {
-                if (test_data_holder.getValues().count(source.getId()) > 0) {
-                    source.setValue(test_data_holder.getValues().at(source.getId()));
+                if (test_data_holder.values.count(source.id) > 0) {
+                    source.value = test_data_holder.values.at(source.id);
                 }
                 if (!ignore_weights) {
-                    for (synapse synapse : source.getOutgoing_synapse()) {
-                        if (test_data_holder.getWeights().count(synapse.getId()) > 0) {
-                            synapse.setWeight(test_data_holder.getWeights().at(synapse.getId()));
+                    for (synapse synapse : source.outgoing_synapse) {
+                        if (test_data_holder.weights.count(synapse.id) > 0) {
+                            synapse.weight = test_data_holder.weights.at(synapse.id);
                         }
                     }
                 }
@@ -149,20 +127,16 @@ namespace cx {
         for (int i = 0; i < layers.size(); i++) {
             vector<neuron> sources = layers.at(i);
             for (neuron source : sources) {
-                dataHolder.getValues().insert(pair<string, int>(source.getId(), source.getValue()));
-                for (synapse synapse : source.getOutgoing_synapse()) {
-                    dataHolder.getWeights().insert(pair<string, int>(synapse.getId(), synapse.getWeight()));
+                dataHolder.values.insert(pair<string, int>(source.id, source.value));
+                for (synapse synapse : source.outgoing_synapse) {
+                    dataHolder.weights.insert(pair<string, int>(synapse.id, synapse.weight));
                 }
             }
         }
 
-        dataHolder.setExpected_outputs(expected_output_values);
+        dataHolder.expected_outputs = expected_output_values;
 
         return dataHolder;
-    }
-
-    vector<neuron> brain::getLayerAt(int layer_nb) {
-        return this->layers.at(layer_nb);
     }
 
     map<string, double> brain::actualWeights() {
@@ -170,24 +144,20 @@ namespace cx {
         for (int i = 0; i < layers.size() - 1; i++) {
             vector<neuron> sources = layers.at(i);
             for (neuron source : sources) {
-                for (synapse synapse : source.getOutgoing_synapse()) {
-                    results.insert(pair<string, double>(synapse.getId(), synapse.getWeight()));
+                for (synapse synapse : source.outgoing_synapse) {
+                    results.insert(pair<string, double>(synapse.id, synapse.weight));
                 }
             }
         }
         return results;
     }
 
-    vector<neuron> brain::getOutputs() {
-        return layers.at(layers.size() - 1);
-    }
-
     void brain::update_value(const string &neuron_id, double val) {
         for (int i = 0; i < layers.size(); i++) {
             vector<neuron> &sources = layers.at(i);
             for (neuron &source : sources) {
-                if (source.getId() == neuron_id) {
-                    source.setValue(val);
+                if (source.id == neuron_id) {
+                    source.value = val;
                     return;
                 }
             }
