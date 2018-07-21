@@ -41,3 +41,9 @@ cmake-build-debug/**
 /CMakeFiles/**
 /.vscode/**
 /cmake-**
+
+.vscode
+build
+
+CMake**
+cmake**

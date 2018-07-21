@@ -22,7 +22,7 @@ namespace cx {
 
     double derivativeSigmoid(double value) {
         double sigmoid = cx::sigmoid(value);
-        return sigmoid * (1.0d - sigmoid);
+        return sigmoid * (1.0 - sigmoid);
     }
 
     enum value_type {

@@ -81,7 +81,7 @@ namespace cx {
                                    int output_size, int nb_hidden_layers, int size_hidden_layer) {
         this->current_iteration = 0;
         this->training_data = {};
-        this->match_range = 0.1;
+        this->match_range = 0.001;
         this->meth_type = meth_type;
         this->with_bias = with_bias;
         this->nb_hidden_layers = nb_hidden_layers;
