@@ -1,6 +1,6 @@
 # Prerequisites
 *.d
-
+callgrind.out**
 # Compiled Object files
 *.slo
 *.lo
