@@ -270,6 +270,10 @@ namespace cx {
         return deltas;
     }
 
+    neural_network::neural_network() {
+
+    }
+
     void brain::create_synapses() {
         random_device rd;
         mt19937 mt(rd());

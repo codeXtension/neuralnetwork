@@ -12,6 +12,10 @@
 #include <sstream>
 #include <fstream>
 #include <cstring>
+#include <boost/algorithm/string.hpp>
+#include <iomanip>
+#include <algorithm>
+#include <cctype>
 
 using namespace std;
 
@@ -36,8 +40,8 @@ namespace cx {
         MINI_BATCH
     };
 
-    vector<map<value_type, vector<int>>> readFile(const string &filepath) {
-        ifstream input_file(filepath);
+    vector<map<value_type, vector<int>>> readFile(const string &file_path) {
+        ifstream input_file(file_path);
         vector<map<value_type, vector<int>>> output;
         for (string line; getline(input_file, line);) {
             istringstream ss(line);
@@ -47,7 +51,7 @@ namespace cx {
                 string s;
                 getline(ss, s, ';');
                 vector<int> input;
-                int n = s.length();
+                unsigned long n = s.length();
                 char char_array[n];
                 strcpy(char_array, s.c_str());
                 for (int i = 0; i < n; i++)
@@ -66,6 +70,18 @@ namespace cx {
         return output;
     };
 
+    map<string, string> read_startup_attributes(const string &properties_file) {
+        ifstream input_file(properties_file);
+        map<string, string> output;
+        for (string line; getline(input_file, line);) {
+            vector<std::string> strs;
+            boost::split(strs, line, boost::is_any_of("="));
+            output.insert(pair<string, string>(strs[0], strs[1]));
+        }
+
+        return output;
+    }
+
     class data_holder {
     public:
         void add_input(vector<int> &inputs);
@@ -82,6 +98,14 @@ namespace cx {
             string node_name = "N1." + to_string(i);
             this->values.insert(pair<string, int>(node_name, input));
         }
+    }
+
+    bool to_bool(std::string str) {
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+        std::istringstream is(str);
+        bool b;
+        is >> std::boolalpha >> b;
+        return b;
     }
 }
 #endif //NEURALNETWORK_UTILITIES_H
