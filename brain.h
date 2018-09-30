@@ -31,7 +31,7 @@ namespace cx {
 
         map<int, vector<neuron>> layers;
 
-        void load(data_holder &test_data_holder, bool ignore_weights);
+        void load(const data_holder &test_data_holder, bool ignore_weights);
 
         data_holder unload();
 

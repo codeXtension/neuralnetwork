@@ -15,7 +15,7 @@ int main() {
     map<string, string> props = read_startup_attributes("/home/elie/neural_data/config.dat");
 
     neural_network network = neural_network(
-            (props.at("with_bias") == "true" ? true : false),
+            props.at("with_bias") == "true",
             convert<double>(props.at("learning_rate")).value(),
             (props.at("method") == "SGD" ? SGD : BATCH),
             convert<int>(props.at("input_size")).value(),

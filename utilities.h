@@ -20,14 +20,6 @@
 using namespace std;
 
 namespace cx {
-    double sigmoid(double value) {
-        return 1.0f / (1 + exp(-value));
-    }
-
-    double derivativeSigmoid(double value) {
-        double sigmoid = cx::sigmoid(value);
-        return sigmoid * (1.0 - sigmoid);
-    }
 
     enum value_type {
         INPUT,
@@ -39,6 +31,15 @@ namespace cx {
         BATCH,
         MINI_BATCH
     };
+
+    double sigmoid(const double &value) {
+        return 1.0f / (1 + exp(-value));
+    }
+
+    double derivativeSigmoid(const double &value) {
+        double sigmoid = cx::sigmoid(value);
+        return sigmoid * (1.0 - sigmoid);
+    }
 
     vector<map<value_type, vector<int>>> readFile(const string &file_path) {
         ifstream input_file(file_path);
@@ -98,14 +99,6 @@ namespace cx {
             string node_name = "N1." + to_string(i);
             this->values.insert(pair<string, int>(node_name, input));
         }
-    }
-
-    bool to_bool(std::string str) {
-        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-        std::istringstream is(str);
-        bool b;
-        is >> std::boolalpha >> b;
-        return b;
     }
 }
 #endif //NEURALNETWORK_UTILITIES_H

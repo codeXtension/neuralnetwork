@@ -333,7 +333,7 @@ namespace cx {
         create_synapses();
     }
 
-    void brain::load(data_holder &test_data_holder, bool ignore_weights) {
+    void brain::load(const data_holder &test_data_holder, bool ignore_weights) {
         this->expected_output_values = test_data_holder.expected_outputs;
 
         for (int i = 0; i < layers.size(); i++) {
