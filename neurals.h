@@ -9,6 +9,8 @@
 #include <iostream>
 #include <vector>
 #include "neural_network.h"
+#include "brain.h"
+
 #include <list>
 #include <map>
 #include <sstream>
@@ -53,15 +55,15 @@ namespace cx {
         return rhs.id != this->id;
     }
 
-    synapse::synapse(double weight, neuron *source, neuron *target) {
-        this->id = source->id + "-" + target->id;
+    synapse::synapse(const double &weight, const string &source_neuron_id, const string &target_neuron_id) {
+        this->id = source_neuron_id + "-" + target_neuron_id;
         this->weight = weight;
-        this->source = source;
-        this->target = target;
+        this->source_neuron_id = source_neuron_id;
+        this->target_neuron_id = target_neuron_id;
     }
 
     void neural_network::log_weights(brain value) {
-        for (int i = 0; i < value.layers.size() - 1; i++) {
+/*        for (int i = 0; i < value.layers.size() - 1; i++) {
             vector<neuron> sources = value.layers[i];
             cout << "BRAIN - Synapses from layer " << (i + 1) << " --> " << (i + 2) << endl;
             for (neuron source : sources) {
@@ -73,7 +75,7 @@ namespace cx {
                          << endl;
                 }
             }
-        }
+        }*/
         cout << endl;
     }
 
@@ -88,6 +90,7 @@ namespace cx {
         this->size_hidden_layer = size_hidden_layer;
         this->learning_rate = learning_rate;
         current_brain = brain(input_size, output_size, nb_hidden_layers, size_hidden_layer, with_bias);
+        cout << endl;
     }
 
     void neural_network::initialize_data(vector<map<value_type, vector<int>>> data) {
@@ -123,12 +126,12 @@ namespace cx {
     bool neural_network::not_all_true(vector<bool> states) {
         bool result = true;
 
-//        cout << "Current states: ";
+        cout << "Current states: ";
         for (auto &&state : states) {
             result &= state;
-//            cout << state;
+            cout << state;
         }
-//        cout << endl;
+        cout << endl;
 
         return !result;
     }
@@ -156,15 +159,15 @@ namespace cx {
         }
         while (not_all_true(instanceState) && current_iteration < max_nb_iterations) {
             current_iteration++;
-//            cout << "EPOC " << current_iteration << endl;
+            cout << "EPOC " << current_iteration << endl;
             for (int u = 0; u < training_data.size(); u++) {
-//                cout << "EPOC " << current_iteration << " - training data " << u + 1 << endl;
+                cout << "EPOC " << current_iteration << " - training data " << u + 1 << endl;
                 current_brain.load(training_data.at(u), true);
                 eval_fwd_propagation();
                 map<string, vector<double>> gradients = eval_gradients();
                 map<string, double> d_weights = delta_weights(gradients);
                 update_weights(d_weights);
-//                this->log_weights(current_brain);
+                this->log_weights(current_brain);
                 instanceState[u] = values_matching(current_brain.layers[current_brain.layers.size() - 1],
                                                    current_brain.expected_output_values);
             }
@@ -174,26 +177,28 @@ namespace cx {
 
     void neural_network::eval_fwd_propagation() {
         for (int i = 1; i < current_brain.layers.size(); i++) {
-//            cout << "FWD - Reading layer " << i << endl;
+            cout << "FWD - Reading layer " << i << endl;
             for (neuron hidden_neuron : current_brain.layers[i]) {
                 double value = 0.0;
                 if (hidden_neuron.id.find("BN") == string::npos) {
-//                    cout << "FWD - Reading " << hidden_neuron.id << " in layer " << i << endl;
+                    cout << "FWD - Reading " << hidden_neuron.id << " in layer " << i << endl;
                     for (neuron prev_neuro : current_brain.layers[i - 1]) {
-                        for (synapse synapse_instance : prev_neuro.outgoing_synapse) {
+                        for (synapse synapse_instance : current_brain.find_by_neuron_id(prev_neuro.id, false, i)) {
                             if (synapse_instance.id.find(hidden_neuron.id) != string::npos) {
-//                                cout << "FWD - Incrementing " << hidden_neuron.id << " value [v=v_old+w("
-//                                     << synapse_instance.id << ")*a(" << synapse_instance.source->id
-//                                     << ")] --> v=" << value << "+" << synapse_instance.weight << "*"
-//                                     << synapse_instance.source->activationValue() << endl;
-                                value += synapse_instance.weight * synapse_instance.source->activationValue();
+                                cout << "FWD - Incrementing " << hidden_neuron.id << " value [v=v_old+w("
+                                     << synapse_instance.id << ")*a(" << synapse_instance.source_neuron_id
+                                     << ")] --> v=" << value << "+" << synapse_instance.weight << "*"
+                                     << current_brain.find_by_id(synapse_instance.source_neuron_id).activationValue()
+                                     << endl;
+                                value += synapse_instance.weight *
+                                         current_brain.find_by_id(synapse_instance.source_neuron_id).activationValue();
                             }
                         }
                     }
                     hidden_neuron.value = value;
                     current_brain.update_value(hidden_neuron.id, value);
-//                    cout << "FWD - Final " << hidden_neuron.id << " value is " << value << " (a="
-//                         << hidden_neuron.activationValue() << ")" << endl;
+                    cout << "FWD - Final " << hidden_neuron.id << " value is " << value << " (a="
+                         << hidden_neuron.activationValue() << ")" << endl;
                 }
             }
         }
@@ -205,8 +210,9 @@ namespace cx {
             for (int j = 0; j < current_brain.layers[i].size(); j++) {
                 neuron neuron_instance = current_brain.layers[i][j];
                 vector<double> values = gradients.at("hidden_" + to_string(i + 1));
-                for (int s = 0; s < neuron_instance.outgoing_synapse.size(); s++) {
-                    synapse synapse_instance = neuron_instance.outgoing_synapse[s];
+                vector<synapse> outgoing_synapses = current_brain.find_by_neuron_id(neuron_instance.id, false, i);
+                for (int s = 0; s < outgoing_synapses.size(); s++) {
+                    synapse synapse_instance = outgoing_synapses[s];
                     double delta_weight = values[s] * neuron_instance.activationValue();
                     deltasWeight.insert(pair<string, double>(synapse_instance.id, delta_weight));
                 }
@@ -217,23 +223,25 @@ namespace cx {
 
     void neural_network::update_weights(map<string, double> deltas) {
         for (int i = current_brain.layers.size() - 2; i >= 0; i--) {
-            //cout << "BACK - WEIGHT - Updating weights for layer " << i + 1 << endl;
+            cout << "BACK - WEIGHT - Updating weights for layer " << i + 1 << endl;
             for (int j = 0; j < current_brain.layers[i].size(); j++) {
                 neuron neuron_instance = current_brain.layers[i][j];
-                for (int s = 0; s < neuron_instance.outgoing_synapse.size(); s++) {
-                    synapse synapse_instance = neuron_instance.outgoing_synapse[s];
+                vector<synapse> outgoing_synapses = current_brain.find_by_neuron_id(neuron_instance.id, false, i);
+
+                for (int s = 0; s < outgoing_synapses.size(); s++) {
+                    synapse synapse_instance = outgoing_synapses[s];
                     double weight =
                             synapse_instance.weight - (learning_rate * deltas.at(synapse_instance.id));
 
-/*                    cout << "BACK - DELTA_WEIGHT - DW[" << synapse_instance.id << "] = Delta["
+                    cout << "BACK - DELTA_WEIGHT - DW[" << synapse_instance.id << "] = Delta["
                          << deltas.at(synapse_instance.id) << "] * Act" << neuron_instance.id << "["
                          << neuron_instance.activationValue() << "]" << endl;
                     cout << "BACK - WEIGHT - Synapse " << synapse_instance.id << " new weight is OLDW("
                          << synapse_instance.weight << ")-(LR(" << learning_rate << ")*DW("
-                         << deltas.at(synapse_instance.id) << ")) => " << weight << endl;*/
+                         << deltas.at(synapse_instance.id) << ")) => " << weight << endl;
 
                     synapse_instance.weight = weight;
-                    current_brain.layers[i][j].outgoing_synapse[s] = synapse_instance;
+                    //current_brain.layers[i][j].outgoing_synapse[s] = synapse_instance;
                 }
             }
         }
@@ -252,8 +260,10 @@ namespace cx {
                             neuron_instance.activationPrimeValue());
                 } else {
                     double dhs = 0;
-                    for (int j = 0; j < neuron_instance.outgoing_synapse.size(); j++) {
-                        synapse synapse_instance = neuron_instance.outgoing_synapse.at(j);
+                    vector<synapse> outgoing_synapses = current_brain.find_by_neuron_id(neuron_instance.id, false, i);
+
+                    for (int j = 0; j < outgoing_synapses.size(); j++) {
+                        synapse synapse_instance = outgoing_synapses.at(j);
                         dhs += deltas.at("hidden_" + to_string(i + 1))[j] * synapse_instance.weight;
                     }
                     deltaHiddenSum.push_back(dhs * neuron_instance.activationPrimeValue());
@@ -262,10 +272,10 @@ namespace cx {
             string label = "hidden_" + to_string(i);
             deltas.insert(pair<string, vector<double>>(label, deltaHiddenSum));
 
-/*            cout << "GRADIENT - Layer " << i + 1 << " -> ";
+            cout << "GRADIENT - Layer " << i + 1 << " -> ";
             for (auto i = deltaHiddenSum.begin(); i != deltaHiddenSum.end(); ++i)
                 std::cout << *i << ' ';
-            cout << endl;*/
+            cout << endl;
         }
         return deltas;
     }
@@ -278,19 +288,21 @@ namespace cx {
         random_device rd;
         mt19937 mt(rd());
         uniform_real_distribution<double> dist(0.1, 0.99);
-
         for (int i = 0; i < this->layers.size() - 1; i++) {
-            vector<neuron> &sources = layers.at(i);
-            vector<neuron> &targets = layers.at(i + 1);
-            for (neuron &source : sources) {
-                for (neuron &target : targets) {
+            vector<neuron> sources = layers.at(i);
+            vector<neuron> targets = layers.at(i + 1);
+            vector<synapse> layered_synapses;
+
+            for (neuron source : sources) {
+                for (neuron target : targets) {
                     if (target.id.find("BN") == string::npos) {
                         double value = (dist(mt) * 78 + 20) / 100;
-                        synapse _synapse_ = synapse(value, &source, &target);
-                        source.outgoing_synapse.push_back(_synapse_);
+                        synapse _synapse_ = synapse(value, source.id, target.id);
+                        layered_synapses.push_back(_synapse_);
                     }
                 }
             }
+            synapses.insert(pair<int, vector<synapse>>(i, layered_synapses));
         }
     }
 
@@ -343,7 +355,8 @@ namespace cx {
                     source.value = test_data_holder.values.at(source.id);
                 }
                 if (!ignore_weights) {
-                    for (synapse synapse : source.outgoing_synapse) {
+                    vector<synapse> outgoing_synapses = find_by_neuron_id(source.id, false, i);
+                    for (synapse synapse : outgoing_synapses) {
                         if (test_data_holder.weights.count(synapse.id) > 0) {
                             synapse.weight = test_data_holder.weights.at(synapse.id);
                         }
@@ -360,7 +373,8 @@ namespace cx {
             vector<neuron> sources = layers.at(i);
             for (neuron source : sources) {
                 dataHolder.values.insert(pair<string, int>(source.id, source.value));
-                for (synapse synapse : source.outgoing_synapse) {
+                vector<synapse> outgoing_synapses = find_by_neuron_id(source.id, false, i);
+                for (synapse synapse : outgoing_synapses) {
                     dataHolder.weights.insert(pair<string, int>(synapse.id, synapse.weight));
                 }
             }
@@ -376,7 +390,8 @@ namespace cx {
         for (int i = 0; i < layers.size() - 1; i++) {
             vector<neuron> sources = layers.at(i);
             for (neuron source : sources) {
-                for (synapse synapse : source.outgoing_synapse) {
+                vector<synapse> outgoing_synapses = find_by_neuron_id(source.id, false, i);
+                for (synapse synapse : outgoing_synapses) {
                     results.insert(pair<string, double>(synapse.id, synapse.weight));
                 }
             }
@@ -391,6 +406,35 @@ namespace cx {
                 if (source.id == neuron_id) {
                     source.value = val;
                     return;
+                }
+            }
+        }
+    }
+
+    vector<synapse> brain::find_by_neuron_id(const string &neuron_id, bool incoming, int layer_nb) {
+        vector<synapse> output;
+        try {
+            vector<synapse> layered_synapses = synapses.at(layer_nb);
+            for (synapse s : layered_synapses) {
+                if (s.source_neuron_id == neuron_id && incoming) {
+                    output.push_back(s);
+                } else if (s.target_neuron_id == neuron_id && !incoming) {
+                    output.push_back(s);
+                }
+            }
+        } catch (exception ex) {
+            return output;
+        }
+
+        return output;
+    }
+
+    neuron brain::find_by_id(const string &neuron_id) {
+        for (int i = 0; i < layers.size(); i++) {
+            vector<neuron> sources = layers.at(i);
+            for (neuron source : sources) {
+                if (source.id == neuron_id) {
+                    return source;
                 }
             }
         }

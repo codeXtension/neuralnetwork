@@ -17,15 +17,12 @@ using namespace std;
 
 namespace cx {
 
-    class synapse;
-
     class neuron {
     protected:
     private:
     public:
         double value = 0.0;
         string id;
-        vector<synapse> outgoing_synapse;
 
         explicit neuron(string id);
 
