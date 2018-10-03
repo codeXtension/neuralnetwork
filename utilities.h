@@ -19,6 +19,27 @@
 
 using namespace std;
 
+enum LogLevel {
+    TRACE, DEBUG, INFO, WARNING, ERROR
+};
+
+std::ostream &operator<<(std::ostream &out, const LogLevel value) {
+    static std::map<LogLevel, std::string> strings;
+    if (strings.size() == 0) {
+#define INSERT_ELEMENT(p) strings[p] = #p
+        INSERT_ELEMENT(TRACE);
+        INSERT_ELEMENT(DEBUG);
+        INSERT_ELEMENT(INFO);
+        INSERT_ELEMENT(WARNING);
+        INSERT_ELEMENT(ERROR);
+#undef INSERT_ELEMENT
+    }
+
+    return out << strings[value];
+}
+
+const LogLevel DEFAULT_LOG_LEVEL = INFO;
+
 namespace cx {
 
     enum value_type {

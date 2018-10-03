@@ -36,8 +36,12 @@ namespace cx {
 
         void guess();
 
+        void breakOnEpoc();
+
     private:
         brain current_brain = brain(0, 0, 0, 0, false);
+
+        bool break_on_epoc = false;
 
         int think_batch(long max_nb_iterations);
 

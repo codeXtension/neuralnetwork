@@ -2,7 +2,6 @@
 #include "neurals.h"
 #include <boost/convert.hpp>
 #include <boost/convert/lexical_cast.hpp>
-
 using namespace cx;
 using boost::lexical_cast;
 using boost::convert;
@@ -25,8 +24,10 @@ int main() {
 
     auto out = cx::readFile(props.at("training_file"));
 
+    //network.breakOnEpoc();
     network.initialize_data(out);
-    cout << "trained after a number of iterations: " << network.think(1000) << endl;
+    int res = network.think(10000);
+    cout << "trained after a number of iterations: " << res << endl;
     return 0;
 }
 
