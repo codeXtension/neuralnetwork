@@ -95,6 +95,8 @@ namespace cx {
         this->size_hidden_layer = size_hidden_layer;
         this->learning_rate = learning_rate;
         current_brain = brain(input_size, output_size, nb_hidden_layers, size_hidden_layer, with_bias);
+
+        log_weights(current_brain);
     }
 
     void neural_network::initialize_data(vector<map<value_type, vector<int>>> data) {
@@ -365,6 +367,8 @@ namespace cx {
         layers.insert(pair<int, vector<neuron>>(nb_hidden_layers + 1, neurons));
 
         create_synapses();
+
+
     }
 
     void brain::load(const data_holder &test_data_holder, bool ignore_weights) {
