@@ -21,10 +21,10 @@ namespace cx {
     public:
         string id;
         double weight = 0.0;
-        neuron *source;
-        neuron *target;
+        string source_neuron_id;
+        string target_neuron_id;
 
-        synapse(double weight, neuron *source, neuron *target);
+        synapse(const double &weight, const string &source_neuron_id, const string &target_neuron_id);
 
         bool operator==(synapse rhs);
 

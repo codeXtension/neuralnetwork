@@ -6,6 +6,7 @@ callgrind.out**
 *.lo
 *.o
 *.obj
+*.cbp
 
 # Precompiled Headers
 *.gch
@@ -42,6 +43,8 @@ cmake-build-debug/**
 /.vscode/**
 /cmake-**
 
+Makefile
+neuralnetwork
 .vscode
 build
 

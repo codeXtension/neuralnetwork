@@ -12,18 +12,35 @@
 #include <sstream>
 #include <fstream>
 #include <cstring>
+#include <boost/algorithm/string.hpp>
+#include <iomanip>
+#include <algorithm>
+#include <cctype>
 
 using namespace std;
 
-namespace cx {
-    double sigmoid(double value) {
-        return 1.0f / (1 + exp(-value));
+enum LogLevel {
+    TRACE, DEBUG, INFO, WARNING, ERROR
+};
+
+std::ostream &operator<<(std::ostream &out, const LogLevel value) {
+    static std::map<LogLevel, std::string> strings;
+    if (strings.size() == 0) {
+#define INSERT_ELEMENT(p) strings[p] = #p
+        INSERT_ELEMENT(TRACE);
+        INSERT_ELEMENT(DEBUG);
+        INSERT_ELEMENT(INFO);
+        INSERT_ELEMENT(WARNING);
+        INSERT_ELEMENT(ERROR);
+#undef INSERT_ELEMENT
     }
 
-    double derivativeSigmoid(double value) {
-        double sigmoid = cx::sigmoid(value);
-        return sigmoid * (1.0 - sigmoid);
-    }
+    return out << strings[value];
+}
+
+LogLevel DEFAULT_LOG_LEVEL = TRACE;
+
+namespace cx {
 
     enum value_type {
         INPUT,
@@ -36,8 +53,17 @@ namespace cx {
         MINI_BATCH
     };
 
-    vector<map<value_type, vector<int>>> readFile(const string &filepath) {
-        ifstream input_file(filepath);
+    double sigmoid(const double &value) {
+        return 1.0f / (1 + exp(-value));
+    }
+
+    double derivativeSigmoid(const double &value) {
+        double sigmoid = cx::sigmoid(value);
+        return sigmoid * (1.0 - sigmoid);
+    }
+
+    vector<map<value_type, vector<int>>> readFile(const string &file_path) {
+        ifstream input_file(file_path);
         vector<map<value_type, vector<int>>> output;
         for (string line; getline(input_file, line);) {
             istringstream ss(line);
@@ -47,7 +73,7 @@ namespace cx {
                 string s;
                 getline(ss, s, ';');
                 vector<int> input;
-                int n = s.length();
+                unsigned long n = s.length();
                 char char_array[n];
                 strcpy(char_array, s.c_str());
                 for (int i = 0; i < n; i++)
@@ -65,6 +91,18 @@ namespace cx {
         }
         return output;
     };
+
+    map<string, string> read_startup_attributes(const string &properties_file) {
+        ifstream input_file(properties_file);
+        map<string, string> output;
+        for (string line; getline(input_file, line);) {
+            vector<std::string> strs;
+            boost::split(strs, line, boost::is_any_of("="));
+            output.insert(pair<string, string>(strs[0], strs[1]));
+        }
+
+        return output;
+    }
 
     class data_holder {
     public:
