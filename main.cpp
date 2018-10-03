@@ -50,8 +50,12 @@ int main(int argc, char *argv[]) {
         network.breakOnEpoc();
 
     network.initialize_data(out);
+    auto started = std::chrono::high_resolution_clock::now();
     int res = network.think(convert<int>(props.at("max_nb_iterations")).value_or(1000000));
-    cx::log(INFO, "AFTERTHOUGHT") << "trained after a number of iterations: " << res << endl;
+    auto done = std::chrono::high_resolution_clock::now();
+    int ms = std::chrono::duration_cast<std::chrono::milliseconds>(done - started).count();
+    cx::log(INFO, "AFTERTHOUGHT") << "trained after a number of iterations: " << res << ", and took " << ms << "ms"
+                                  << endl;
     return 0;
 }
 
