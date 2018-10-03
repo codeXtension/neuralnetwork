@@ -11,9 +11,14 @@ using boost::convert;
 struct boost::cnv::by_default : public boost::cnv::lexical_cast {
 };
 
-int main() {
+int main(int argc, char *argv[]) {
     cout.precision(17);
-    map<string, string> props = read_startup_attributes("/home/elie/Workspaces/neuralnetwork/neural_data/config.dat");
+    if (argc == 1) {
+        cout << "Please provide the config file path"
+             << endl; // "/home/elie/Workspaces/neuralnetwork/neural_data/config.dat"
+        return 0;
+    }
+    map<string, string> props = read_startup_attributes(argv[1]);
 
     string imported_log_level = props.at("log_level");
 
