@@ -31,18 +31,22 @@ namespace cx {
     }
 
     double neuron::activationPrimeValue() {
-        if (this->id.find("BN") == string::npos || this->id.find("N1.") == string::npos) {
-            return derivativeSigmoid(value);
-        } else {
+        string::size_type bn = id.find("BN");
+        string::size_type n1 = id.find("N1.");
+        if (bn != string::npos || n1 != string::npos) {
             return value;
+        } else {
+            return derivativeSigmoid(value);
         }
     }
 
     double neuron::activationValue() {
-        if (this->id.find("BN") == string::npos || this->id.find("N1.") == string::npos) {
-            return sigmoid(value);
-        } else {
+        string::size_type bn = id.find("BN");
+        string::size_type n1 = id.find("N1.");
+        if (bn != string::npos || n1 != string::npos) {
             return value;
+        } else {
+            return sigmoid(value);
         }
     }
 
@@ -131,7 +135,7 @@ namespace cx {
 
     bool neural_network::not_all_true(vector<bool> states) {
         bool result = true;
-        cx::log _log = cx::log(INFO);
+        cx::log _log = cx::log(DEBUG);
         _log << "Current states for iteration " << current_iteration << ": ";
         for (auto &&state : states) {
             result &= state;
