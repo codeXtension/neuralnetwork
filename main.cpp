@@ -41,7 +41,9 @@ int main() {
 
     auto out = cx::readFile(props.at("training_file"));
 
-    //network.breakOnEpoc();
+    if (props.at("break_on_epoc") == "true")
+        network.breakOnEpoc();
+
     network.initialize_data(out);
     int res = network.think(convert<int>(props.at("max_nb_iterations")).value_or(1000000));
     cx::log(INFO, "AFTERTHOUGHT") << "trained after a number of iterations: " << res << endl;
