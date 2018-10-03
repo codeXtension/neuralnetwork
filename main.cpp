@@ -2,6 +2,8 @@
 #include "neurals.h"
 #include <boost/convert.hpp>
 #include <boost/convert/lexical_cast.hpp>
+#include "log.h"
+
 using namespace cx;
 using boost::lexical_cast;
 using boost::convert;
@@ -26,8 +28,9 @@ int main() {
 
     //network.breakOnEpoc();
     network.initialize_data(out);
-    int res = network.think(10000);
-    cout << "trained after a number of iterations: " << res << endl;
+    int res = network.think(1000);
+    cx:
+    log(INFO, "AFTERTHOUGHT") << "trained after a number of iterations: " << res << endl;
     return 0;
 }
 

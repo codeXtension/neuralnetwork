@@ -38,7 +38,7 @@ std::ostream &operator<<(std::ostream &out, const LogLevel value) {
     return out << strings[value];
 }
 
-const LogLevel DEFAULT_LOG_LEVEL = INFO;
+const LogLevel DEFAULT_LOG_LEVEL = DEBUG;
 
 namespace cx {
 

@@ -16,7 +16,7 @@
 #include "neuron.h"
 #include "synapse.h"
 #include <typeinfo>
-#include "Log.h"
+#include "log.h"
 
 using namespace std;
 
