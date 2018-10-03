@@ -13,7 +13,22 @@ struct boost::cnv::by_default : public boost::cnv::lexical_cast {
 
 int main() {
     cout.precision(17);
-    map<string, string> props = read_startup_attributes("/home/elie/neural_data/config.dat");
+    map<string, string> props = read_startup_attributes("/home/elie/Workspaces/neuralnetwork/neural_data/config.dat");
+
+    string imported_log_level = props.at("log_level");
+
+    if (imported_log_level == "TRACE")
+        DEFAULT_LOG_LEVEL = TRACE;
+    else if (imported_log_level == "DEBUG")
+        DEFAULT_LOG_LEVEL = DEBUG;
+    else if (imported_log_level == "INFO")
+        DEFAULT_LOG_LEVEL = INFO;
+    else if (imported_log_level == "WARNING")
+        DEFAULT_LOG_LEVEL = WARNING;
+    else if (imported_log_level == "ERROR")
+        DEFAULT_LOG_LEVEL = ERROR;
+    else
+        DEFAULT_LOG_LEVEL = INFO;
 
     neural_network network = neural_network(
             props.at("with_bias") == "true",
@@ -28,7 +43,7 @@ int main() {
 
     //network.breakOnEpoc();
     network.initialize_data(out);
-    int res = network.think();
+    int res = network.think(convert<int>(props.at("max_nb_iterations")).value_or(1000000));
     cx::log(INFO, "AFTERTHOUGHT") << "trained after a number of iterations: " << res << endl;
     return 0;
 }

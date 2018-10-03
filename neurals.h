@@ -129,7 +129,7 @@ namespace cx {
 
     bool neural_network::not_all_true(vector<bool> states) {
         bool result = true;
-        cx::log _log = cx::log(DEBUG);
+        cx::log _log = cx::log(INFO);
         _log << "Current states for iteration " << current_iteration << ": ";
         for (auto &&state : states) {
             result &= state;

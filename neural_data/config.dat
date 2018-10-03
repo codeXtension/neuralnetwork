@@ -1,0 +1,11 @@
+method=SGD
+with_bias=true
+learning_rate=0.3
+input_size=2
+output_size=1
+max_nb_iterations=100
+nb_hidden_layers=1
+size_hidden_layer=3
+log_level=INFO
+training_file=/home/elie/Workspaces/neuralnetwork/neural_data/training.dat
+test_file=/home/elie/Workspaces/neuralnetwork/neural_data/test.dat
