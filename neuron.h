@@ -24,7 +24,7 @@ namespace cx {
         double value = 0.0;
         string id;
 
-        explicit neuron(string id);
+        explicit neuron(const string &id);
 
         bool operator==(neuron rhs);
 

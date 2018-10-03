@@ -26,7 +26,7 @@ int main() {
     auto out = cx::readFile(props.at("training_file"));
 
     network.initialize_data(out);
-    cout << "trained after a number of iterations: " << network.think() << endl;
+    cout << "trained after a number of iterations: " << network.think(1000) << endl;
     return 0;
 }
 

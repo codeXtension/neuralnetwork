@@ -43,6 +43,8 @@ namespace cx {
         vector<synapse> find_by_neuron_id(const string &neuron_id, bool incoming, int layer_nb);
 
         neuron find_by_id(const string &neuron_id);
+
+        void update_synapse(const string &synapse_id, int layer_nb, const double &weight);
     };
 }
 
