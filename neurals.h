@@ -20,7 +20,7 @@ using namespace std;
 
 namespace cx {
 
-    const float MATCH_RANGE = 0.3;
+    const float MATCH_RANGE = 0.1;
 
     bool neuron::operator==(neuron rhs) {
         return id == rhs.id;
@@ -129,13 +129,13 @@ namespace cx {
 
     bool neural_network::not_all_true(vector<bool> states) {
         bool result = true;
-        cx::log debug = cx::log(DEBUG);
-        debug << "Current states: ";
+        cx::log _log = cx::log(DEBUG);
+        _log << "Current states for iteration " << current_iteration << ": ";
         for (auto &&state : states) {
             result &= state;
-            debug << state;
+            _log << state;
         }
-        debug << endl;
+        _log << endl;
 
         return !result;
     }

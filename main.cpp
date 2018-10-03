@@ -28,7 +28,7 @@ int main() {
 
     //network.breakOnEpoc();
     network.initialize_data(out);
-    int res = network.think(1000);
+    int res = network.think();
     cx::log(INFO, "AFTERTHOUGHT") << "trained after a number of iterations: " << res << endl;
     return 0;
 }
