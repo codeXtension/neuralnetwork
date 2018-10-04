@@ -1,0 +1,7 @@
+neuralnetwork:
+    script:
+        cd apps/neuralnetwork
+        mkdir build
+        cd build
+        cmake ..
+        make
