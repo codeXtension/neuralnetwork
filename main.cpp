@@ -2,6 +2,7 @@
 #include "neurals.h"
 #include <boost/convert.hpp>
 #include <boost/convert/lexical_cast.hpp>
+#include "chrono"
 
 using namespace cx;
 using boost::lexical_cast;
