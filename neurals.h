@@ -263,7 +263,7 @@ namespace cx {
 
             for (neuron source : sources) {
                 for (neuron target : targets) {
-                    if (target.id.find("BN") == string::npos) {
+                    if (!(target.id.find("BN") != string::npos)) {
                         double value = (dist(mt) * 78 + 20) / 100;
                         synapse _synapse_ = synapse(value, source.id, target.id);
                         layered_synapses.push_back(_synapse_);
@@ -408,7 +408,7 @@ namespace cx {
                 }
             }
         }
-        return neuron("NOT_FOUND");
+        return neuron("");
     }
 
     void brain::update_synapse(const string &synapse_id, int layer_nb, const double &weight) {
