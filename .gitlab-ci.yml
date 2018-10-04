@@ -1,6 +1,5 @@
-neuralnetwork:
-    script:
-        mkdir build
-        cd build
-        cmake ..
-        make
+script:
+    mkdir build
+    cd build
+    cmake ..
+    make
