@@ -14,7 +14,6 @@
 #include <list>
 #include <map>
 #include <sstream>
-#include "log.h"
 
 using namespace std;
 
@@ -69,25 +68,6 @@ namespace cx {
         this->target_neuron_id = target_neuron_id;
     }
 
-    void neural_network::log_weights(brain value) {
-        cx::log debug = cx::log(DEBUG, "BRAIN");
-        for (int i = 0; i < value.layers.size() - 1; i++) {
-            vector<neuron> sources = value.layers[i];
-            debug << "Synapses from layer " << (i + 1) << " --> " << (i + 2) << endl;
-            for (neuron source : sources) {
-                vector<synapse> outgoing_synapses = value.find_by_neuron_id(source.id, false, i);
-                for (synapse s : outgoing_synapses) {
-                    neuron target = value.find_by_id(s.target_neuron_id);
-                    debug << source.id << " [" << source.value << "] ---" << s.weight
-                          << "---> " << target.id << " [" << target.value << "] a("
-                          << target.activationValue() << ")"
-                          << endl;
-                }
-            }
-        }
-        debug << endl;
-    }
-
     neural_network::neural_network(bool with_bias, double learning_rate, method_type meth_type, int input_size,
                                    int output_size, int nb_hidden_layers, int size_hidden_layer) {
         this->current_iteration = 0;
@@ -99,8 +79,6 @@ namespace cx {
         this->size_hidden_layer = size_hidden_layer;
         this->learning_rate = learning_rate;
         current_brain = brain(input_size, output_size, nb_hidden_layers, size_hidden_layer, with_bias);
-
-        log_weights(current_brain);
     }
 
     void neural_network::initialize_data(vector<map<value_type, vector<int>>> data) {
@@ -135,13 +113,9 @@ namespace cx {
 
     bool neural_network::not_all_true(vector<bool> states) {
         bool result = true;
-        cx::log _log = cx::log(DEBUG);
-        _log << "Current states for iteration " << current_iteration << ": ";
         for (auto &&state : states) {
             result &= state;
-            _log << state;
         }
-        _log << endl;
 
         return !result;
     }
@@ -163,28 +137,24 @@ namespace cx {
     }
 
     int neural_network::think_sgd(long max_nb_iterations) {
-        cx::log trace = cx::log(TRACE, "SGD");
         vector<bool> instanceState;
         for (int u = 0; u < training_data.size(); u++) {
             instanceState.push_back(false);
         }
         while (not_all_true(instanceState) && current_iteration < max_nb_iterations) {
             current_iteration++;
-            trace << "EPOC " << current_iteration << endl;
             for (int u = 0; u < training_data.size(); u++) {
-                trace << "EPOC " << current_iteration << " - training data " << u + 1 << endl;
                 current_brain.load(training_data.at(u), true);
                 eval_fwd_propagation();
                 map<string, vector<double>> gradients = eval_gradients();
                 map<string, double> d_weights = delta_weights(gradients);
                 update_weights(d_weights);
-                this->log_weights(current_brain);
                 instanceState[u] = values_matching(current_brain.layers[current_brain.layers.size() - 1],
                                                    current_brain.expected_output_values);
             }
 
             if (break_on_epoc) {
-                trace << "Press Enter to Continue" << endl;
+                cout << "Press Enter to Continue" << endl;
                 cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
             }
         }
@@ -192,34 +162,21 @@ namespace cx {
     }
 
     void neural_network::eval_fwd_propagation() {
-        cx::log trace = cx::log(TRACE, "FWD");
 
         for (int i = 1; i < current_brain.layers.size(); i++) {
-            trace << "Reading layer " << i << endl;
             for (neuron hidden_neuron : current_brain.layers[i]) {
                 double value = 0.0;
                 if (hidden_neuron.id.find("BN") == string::npos) {
-                    trace << "Reading " << hidden_neuron.id << " in layer " << i << endl;
                     for (neuron prev_neuro : current_brain.layers[i - 1]) {
                         vector<synapse> synapses = current_brain.find_by_neuron_id(prev_neuro.id, false, i - 1);
                         for (synapse synapse_instance : synapses) {
                             if (synapse_instance.id.find(hidden_neuron.id) != string::npos) {
-                                trace << "Incrementing " << hidden_neuron.id << " value [v=v_old+w("
-                                      << synapse_instance.id << ")*a(" << synapse_instance.source_neuron_id
-                                      << ")] --> v=" << value << "+" << synapse_instance.weight << "*"
-                                      << current_brain.find_by_id(synapse_instance.source_neuron_id).activationValue()
-                                      << endl;
                                 value += synapse_instance.weight *
                                          current_brain.find_by_id(synapse_instance.source_neuron_id).activationValue();
                             }
                         }
                     }
                     current_brain.update_value(hidden_neuron.id, value);
-
-                    // cx::logging starts below
-                    neuron temp = current_brain.find_by_id(hidden_neuron.id);
-                    trace << "Final " << hidden_neuron.id << " value is " << temp.value << " (a="
-                          << temp.activationValue() << ")" << endl;
                 }
             }
         }
@@ -243,10 +200,7 @@ namespace cx {
     }
 
     void neural_network::update_weights(map<string, double> deltas) {
-        cx::log trace = cx::log(TRACE, "BACK");
-
         for (int i = current_brain.layers.size() - 2; i >= 0; i--) {
-            trace << "WEIGHT - Updating weights for layer " << i + 1 << endl;
             for (int j = 0; j < current_brain.layers[i].size(); j++) {
                 neuron neuron_instance = current_brain.layers[i][j];
                 vector<synapse> outgoing_synapses = current_brain.find_by_neuron_id(neuron_instance.id, false, i);
@@ -256,13 +210,6 @@ namespace cx {
                     double weight =
                             synapse_instance.weight - (learning_rate * deltas.at(synapse_instance.id));
 
-                    trace << "DELTA_WEIGHT - DW[" << synapse_instance.id << "] = Delta["
-                          << deltas.at(synapse_instance.id) << "] * Act" << neuron_instance.id << "["
-                          << neuron_instance.activationValue() << "]" << endl;
-                    trace << "WEIGHT - Synapse " << synapse_instance.id << " new weight is OLDW("
-                          << synapse_instance.weight << ")-(LR(" << learning_rate << ")*DW("
-                          << deltas.at(synapse_instance.id) << ")) => " << weight << endl;
-
                     current_brain.update_synapse(synapse_instance.id, i, weight);
                 }
             }
@@ -270,8 +217,6 @@ namespace cx {
     }
 
     map<string, vector<double>> neural_network::eval_gradients() {
-        cx::log trace = cx::log(TRACE, "GRADIENT");
-
         map<string, vector<double>> deltas = map<string, vector<double>>();
         for (unsigned long i = current_brain.layers.size() - 1; i > 0; i--) {
             vector<double> deltaHiddenSum = vector<double>();
@@ -295,11 +240,6 @@ namespace cx {
             }
             string label = "hidden_" + to_string(i);
             deltas.insert(pair<string, vector<double>>(label, deltaHiddenSum));
-
-            trace << "Layer " << i + 1 << " -> ";
-            for (auto i = deltaHiddenSum.begin(); i != deltaHiddenSum.end(); ++i)
-                trace << *i << ' ';
-            trace << endl;
         }
         return deltas;
     }

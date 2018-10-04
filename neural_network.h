@@ -23,7 +23,6 @@ namespace cx {
     public:
         neural_network();
 
-        void log_weights(brain value);
 
         neural_network(bool with_bias, double learning_rate, method_type meth_type, int input_size, int output_size,
                        int nb_hidden_layers, int size_hidden_layer);

@@ -2,7 +2,6 @@
 #include "neurals.h"
 #include <boost/convert.hpp>
 #include <boost/convert/lexical_cast.hpp>
-#include "log.h"
 
 using namespace cx;
 using boost::lexical_cast;
@@ -54,7 +53,7 @@ int main(int argc, char *argv[]) {
     int res = network.think(convert<int>(props.at("max_nb_iterations")).value_or(1000000));
     auto done = std::chrono::high_resolution_clock::now();
     int ms = std::chrono::duration_cast<std::chrono::milliseconds>(done - started).count();
-    cx::log(INFO, "AFTERTHOUGHT") << "trained after a number of iterations: " << res << ", and took " << ms << "ms"
+    cout << "trained after a number of iterations: " << res << ", and took " << ms << "ms"
                                   << endl;
     return 0;
 }
