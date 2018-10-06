@@ -36,9 +36,9 @@ int main(int argc, char *argv[]) {
 
     network.initialize_data(out);
     auto started = std::chrono::high_resolution_clock::now();
-    int res = network.think(convert<int>(props.at("max_nb_iterations")).value_or(1000000));
+    long res = network.think(convert<int>(props.at("max_nb_iterations")).value_or(1000000));
     auto done = std::chrono::high_resolution_clock::now();
-    int ms = std::chrono::duration_cast<std::chrono::milliseconds>(done - started).count();
+    long ms = std::chrono::duration_cast<std::chrono::milliseconds>(done - started).count();
     cout << "trained using " << props.at("method") << " after a number of iterations: " << res << ", and took " << ms
          << "ms"
          << endl;

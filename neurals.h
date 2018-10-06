@@ -92,16 +92,18 @@ namespace cx {
         }
     }
 
-    int neural_network::think() {
+    long neural_network::think() {
         return think(LONG_MAX);
     }
 
-    int neural_network::think(long max_nb_iterations) {
+    long neural_network::think(long max_nb_iterations) {
         switch (meth_type) {
             case SGD:
                 return think_sgd(max_nb_iterations);
             case BATCH:
                 return think_batch(max_nb_iterations);
+            case MINI_BATCH:
+                return think_minibatch(max_nb_iterations);
             default:
                 return think_sgd(max_nb_iterations);
         }
@@ -131,7 +133,7 @@ namespace cx {
         return result;
     }
 
-    int neural_network::think_batch(long max_nb_iterations) {
+    long neural_network::think_batch(long max_nb_iterations) {
 
         vector<bool> instanceState;
         for (int u = 0; u < training_data.size(); u++) {
@@ -180,7 +182,7 @@ namespace cx {
         return current_iteration;
     }
 
-    int neural_network::think_sgd(long max_nb_iterations) {
+    long neural_network::think_sgd(long max_nb_iterations) {
         vector<bool> instanceState;
         for (int u = 0; u < training_data.size(); u++) {
             instanceState.push_back(false);
@@ -294,6 +296,10 @@ namespace cx {
 
     void neural_network::breakOnEpoc() {
         break_on_epoc = true;
+    }
+
+    long neural_network::think_minibatch(long max_nb_iterations) {
+        return 0;
     }
 
     void brain::create_synapses() {
