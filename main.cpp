@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
     neural_network network = neural_network(
             props.at("with_bias") == "true",
             convert<double>(props.at("learning_rate")).value(),
-            (props.at("method") == "SGD" ? SGD : BATCH),
+            (props.at("method") == "SGD" ? SGD : (props.at("method") == "BATCH" ? BATCH : MINI_BATCH)),
             convert<int>(props.at("input_size")).value(),
             convert<int>(props.at("output_size")).value(),
             convert<int>(props.at("nb_hidden_layers")).value(),
