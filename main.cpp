@@ -20,21 +20,6 @@ int main(int argc, char *argv[]) {
     }
     map<string, string> props = read_startup_attributes(argv[1]);
 
-    string imported_log_level = props.at("log_level");
-
-    if (imported_log_level == "TRACE")
-        DEFAULT_LOG_LEVEL = TRACE;
-    else if (imported_log_level == "DEBUG")
-        DEFAULT_LOG_LEVEL = DEBUG;
-    else if (imported_log_level == "INFO")
-        DEFAULT_LOG_LEVEL = INFO;
-    else if (imported_log_level == "WARNING")
-        DEFAULT_LOG_LEVEL = WARNING;
-    else if (imported_log_level == "ERROR")
-        DEFAULT_LOG_LEVEL = ERROR;
-    else
-        DEFAULT_LOG_LEVEL = INFO;
-
     neural_network network = neural_network(
             props.at("with_bias") == "true",
             convert<double>(props.at("learning_rate")).value(),
