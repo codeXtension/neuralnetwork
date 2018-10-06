@@ -157,9 +157,53 @@ namespace cx {
         return result;
     }
 
-    int neural_network::think_batch(long max_nb_iterations) {
-        //TODO: still needs to be migrated
-        return 0;
+ int neural_network::think_batch(long max_nb_iterations) {
+
+        vector<bool> instanceState;
+        for (int u = 0; u < training_data.size(); u++) {
+            instanceState.push_back(false);
+        }
+
+        while (not_all_true(instanceState) && current_iteration < max_nb_iterations) {
+            current_iteration++;
+            for (int u = 0; u < training_data.size(); u++) {
+                current_brain.load(training_data.at(u), true);
+                eval_fwd_propagation();
+                training_data[u] = current_brain.unload();
+            }
+
+            map<string, double> all_deltas;
+
+            for (int u = 0; u < training_data.size(); u++) {
+                current_brain.load(training_data.at(u), true);
+                map<string, vector<double>> gradients = eval_gradients();
+                map<string, double> d_weights = delta_weights(gradients);
+                if (all_deltas.size() == 0) {
+                    all_deltas.insert(d_weights.begin(), d_weights.end());
+                } else {
+                    map<string, double>::iterator it;
+                    for (it = all_deltas.begin(); it != all_deltas.end(); it++) {
+                        it->second += d_weights.at(it->first);
+                    }
+                }
+            }
+
+            map<string, double>::iterator it;
+            for (it = all_deltas.begin(); it != all_deltas.end(); it++) {
+                it->second /= training_data.size();
+            }
+
+            for (int u = 0; u < training_data.size(); u++) {
+                current_brain.load(training_data.at(u), true);
+                update_weights(all_deltas);
+                training_data[u] = current_brain.unload();
+                instanceState[u] = values_matching(current_brain.layers[current_brain.layers.size() - 1],
+                                                   current_brain.expected_output_values);
+            }
+
+        }
+
+        return current_iteration;
     }
 
     int neural_network::think_sgd(long max_nb_iterations) {
