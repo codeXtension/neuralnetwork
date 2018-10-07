@@ -300,10 +300,11 @@ namespace cx {
 			while (counter < training_data.size()) {
 
 				map<string, double> all_deltas;
+				int new_batch_size= batch_size;
+				int upper_limit = counter + new_batch_size;
 
-				int upper_limit = counter + batch_size;
-
-				if ((training_data.size() - upper_limit < batch_size)) {
+				if ((training_data.size() - upper_limit < new_batch_size)) {
+					new_batch_size += (training_data.size() - upper_limit);
 					upper_limit += (training_data.size() - upper_limit);
 				}
 
@@ -317,12 +318,12 @@ namespace cx {
 						all_deltas.insert(d_weights.begin(), d_weights.end());
 						map<string, double>::iterator it;
 						for (it = all_deltas.begin(); it != all_deltas.end(); it++) {
-							it->second = it->second / training_data.size();
+							it->second = it->second / new_batch_size;
 						}
 					} else {
 						map<string, double>::iterator it;
 						for (it = all_deltas.begin(); it != all_deltas.end(); it++) {
-							it->second += (d_weights.at(it->first) / training_data.size());
+							it->second += (d_weights.at(it->first) / new_batch_size);
 						}
 					}
 				}
