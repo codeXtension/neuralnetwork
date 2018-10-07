@@ -48,5 +48,11 @@ neuralnetwork
 .vscode
 build
 
+# eclipse stuff
+.cproject
+.project
+.settings
+.settings/**
+
 CMake**
 cmake**
