@@ -14,8 +14,8 @@ struct boost::cnv::by_default : public boost::cnv::lexical_cast {
 int main(int argc, char *argv[]) {
     cout.precision(17);
     if (argc == 1) {
-        cout << "Please provide the config file path"
-             << endl; // "/home/elie/Workspaces/neuralnetwork/neural_data/config.dat"
+        cout << "Please provide the configuration file path"
+             << endl;
         return 0;
     }
     map<string, string> props = read_startup_attributes(argv[1]);
