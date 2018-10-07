@@ -19,6 +19,27 @@
 
 using namespace std;
 
+enum LogLevel {
+    TRACE, DEBUG, INFO, WARNING, ERROR
+};
+
+std::ostream &operator<<(std::ostream &out, const LogLevel value) {
+    static std::map<LogLevel, std::string> strings;
+    if (strings.size() == 0) {
+#define INSERT_ELEMENT(p) strings[p] = #p
+        INSERT_ELEMENT(TRACE);
+        INSERT_ELEMENT(DEBUG);
+        INSERT_ELEMENT(INFO);
+        INSERT_ELEMENT(WARNING);
+        INSERT_ELEMENT(ERROR);
+#undef INSERT_ELEMENT
+    }
+
+    return out << strings[value];
+}
+
+LogLevel DEFAULT_LOG_LEVEL = TRACE;
+
 namespace cx {
 
     enum value_type {
@@ -95,7 +116,7 @@ namespace cx {
 
     void data_holder::add_input(vector<int> &inputs) {
         for (int i = 1; i <= inputs.size(); i++) {
-            int input = inputs.at(static_cast<unsigned long>(i - 1));
+            int input = inputs.at(i - 1);
             string node_name = "N1." + to_string(i);
             this->values.insert(pair<string, int>(node_name, input));
         }
