@@ -8,5 +8,5 @@ nb_hidden_layers=1
 size_hidden_layer=3
 log_level=TRACE
 break_on_epoc=false
-training_file=/home/elie/Workspaces/neuralnetwork/neural_data/training.dat
-test_file=/home/elie/Workspaces/neuralnetwork/neural_data/test.dat
+training_file=/home/elie/git/neuralnetwork/neural_data/training.dat
+test_file=/home/elie/git/neuralnetwork/neural_data/test.dat
