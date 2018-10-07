@@ -3,6 +3,7 @@
 #include <boost/convert.hpp>
 #include <boost/convert/lexical_cast.hpp>
 #include "chrono"
+#include "cifar10_reader.h"
 
 using namespace cx;
 using boost::lexical_cast;
@@ -13,6 +14,14 @@ struct boost::cnv::by_default : public boost::cnv::lexical_cast {
 
 int main(int argc, char *argv[]) {
     cout.precision(17);
+
+//    auto dataset = cifar::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
+//
+//    for(uint8_t const& value: dataset.training_images[0]) {
+//    	cout << value;
+//    }
+//    cout << endl;
+
     if (argc == 1) {
         cout << "Please provide the configuration file path"
              << endl;

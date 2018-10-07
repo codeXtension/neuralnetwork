@@ -471,7 +471,7 @@ namespace cx {
 					output.push_back(s);
 				}
 			}
-		} catch (exception ex) {
+		} catch (const exception &ex) {
 			return output;
 		}
 
