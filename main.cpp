@@ -2,7 +2,7 @@
 #include "neurals.h"
 #include <boost/convert.hpp>
 #include <boost/convert/lexical_cast.hpp>
-#include "log.h"
+#include "chrono"
 
 using namespace cx;
 using boost::lexical_cast;
@@ -20,25 +20,10 @@ int main(int argc, char *argv[]) {
     }
     map<string, string> props = read_startup_attributes(argv[1]);
 
-    string imported_log_level = props.at("log_level");
-
-    if (imported_log_level == "TRACE")
-        DEFAULT_LOG_LEVEL = TRACE;
-    else if (imported_log_level == "DEBUG")
-        DEFAULT_LOG_LEVEL = DEBUG;
-    else if (imported_log_level == "INFO")
-        DEFAULT_LOG_LEVEL = INFO;
-    else if (imported_log_level == "WARNING")
-        DEFAULT_LOG_LEVEL = WARNING;
-    else if (imported_log_level == "ERROR")
-        DEFAULT_LOG_LEVEL = ERROR;
-    else
-        DEFAULT_LOG_LEVEL = INFO;
-
     neural_network network = neural_network(
             props.at("with_bias") == "true",
             convert<double>(props.at("learning_rate")).value(),
-            (props.at("method") == "SGD" ? SGD : BATCH),
+            (props.at("method") == "SGD" ? SGD : (props.at("method") == "BATCH" ? BATCH : MINI_BATCH)),
             convert<int>(props.at("input_size")).value(),
             convert<int>(props.at("output_size")).value(),
             convert<int>(props.at("nb_hidden_layers")).value(),
@@ -51,11 +36,12 @@ int main(int argc, char *argv[]) {
 
     network.initialize_data(out);
     auto started = std::chrono::high_resolution_clock::now();
-    int res = network.think(convert<int>(props.at("max_nb_iterations")).value_or(1000000));
+    long res = network.think(convert<int>(props.at("max_nb_iterations")).value_or(1000000));
     auto done = std::chrono::high_resolution_clock::now();
-    int ms = std::chrono::duration_cast<std::chrono::milliseconds>(done - started).count();
-    cx::log(INFO, "AFTERTHOUGHT") << "trained after a number of iterations: " << res << ", and took " << ms << "ms"
-                                  << endl;
+    long ms = std::chrono::duration_cast<std::chrono::milliseconds>(done - started).count();
+    cout << "trained using " << props.at("method") << " after a number of iterations: " << res << ", and took " << ms
+         << "ms"
+         << endl;
     return 0;
 }
 
