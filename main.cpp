@@ -28,6 +28,7 @@ int main(int argc, char *argv[]) {
             convert<int>(props.at("output_size")).value(),
             convert<int>(props.at("nb_hidden_layers")).value(),
             convert<int>(props.at("size_hidden_layer")).value());
+    network.batch_size=convert<int>(props.at("batch_size")).value_or(1);
 
     auto out = cx::readFile(props.at("training_file"));
 

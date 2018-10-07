@@ -1,4 +1,5 @@
-method=BATCH
+method=SGD
+batch_size=2
 with_bias=false
 learning_rate=4.2
 input_size=2

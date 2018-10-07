@@ -32,7 +32,7 @@ namespace cx {
 
         brain(int in_size, int out_size, int nb_hidden_layers, int hidden_layer_size, bool with_bias);
 
-        void load(const data_holder &test_data_holder, bool ignore_weights);
+        void load(const data_holder &test_data_holder);
 
         data_holder unload();
 
