@@ -142,16 +142,12 @@ namespace cx {
 
         while (not_all_true(instanceState) && current_iteration < max_nb_iterations) {
             current_iteration++;
-            for (int u = 0; u < training_data.size(); u++) {
-                current_brain.load(training_data.at(u), true);
-                eval_fwd_propagation();
-                training_data[u] = current_brain.unload();
-            }
-
             map<string, double> all_deltas;
 
             for (int u = 0; u < training_data.size(); u++) {
                 current_brain.load(training_data.at(u), true);
+                eval_fwd_propagation();
+                training_data[u] = current_brain.unload();
                 map<string, vector<double>> gradients = eval_gradients();
                 map<string, double> d_weights = delta_weights(gradients);
                 if (all_deltas.size() == 0) {
@@ -159,14 +155,9 @@ namespace cx {
                 } else {
                     map<string, double>::iterator it;
                     for (it = all_deltas.begin(); it != all_deltas.end(); it++) {
-                        it->second += d_weights.at(it->first);
+                        it->second += (d_weights.at(it->first)/training_data.size());
                     }
                 }
-            }
-
-            map<string, double>::iterator it;
-            for (it = all_deltas.begin(); it != all_deltas.end(); it++) {
-                it->second /= training_data.size();
             }
 
             for (int u = 0; u < training_data.size(); u++) {
