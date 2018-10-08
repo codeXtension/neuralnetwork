@@ -328,7 +328,7 @@ namespace cx {
 					}
 				}
 
-				for (int u = 0; u < training_data.size(); u++) {
+				for (int u = counter; u < upper_limit; u++) {
 					current_brain.load(training_data.at(u));
 					update_weights(all_deltas);
 					instanceState[u] = values_matching(current_brain.layers[current_brain.layers.size() - 1], current_brain.expected_output_values);
