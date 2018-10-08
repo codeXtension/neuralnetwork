@@ -175,6 +175,61 @@ namespace cx {
 		return current_iteration;
 	}
 
+    long neural_network::think_minibatch(long max_nb_iterations) {
+        vector<bool> instanceState;
+        for (int u = 0; u < training_data.size(); u++) {
+            instanceState.push_back(false);
+        }
+
+        while (not_all_true(instanceState) && current_iteration < max_nb_iterations) {
+            current_iteration++;
+
+            int counter = 0;
+
+            while (counter < training_data.size()) {
+
+                map<string, double> all_deltas;
+                int new_batch_size = batch_size;
+                int upper_limit = counter + new_batch_size;
+
+                if ((training_data.size() - upper_limit < new_batch_size)) {
+                    new_batch_size += (training_data.size() - upper_limit);
+                    upper_limit += (training_data.size() - upper_limit);
+                }
+
+                for (int u = counter; u < upper_limit; u++) {
+                    current_brain.load(training_data.at(u));
+                    eval_fwd_propagation();
+                    training_data[u] = current_brain.unload();
+                    map<string, vector<double>> gradients = eval_gradients();
+                    map<string, double> d_weights = delta_weights(gradients);
+                    if (all_deltas.size() == 0) {
+                        all_deltas.insert(d_weights.begin(), d_weights.end());
+                        map<string, double>::iterator it;
+                        for (it = all_deltas.begin(); it != all_deltas.end(); it++) {
+                            it->second = it->second / new_batch_size;
+                        }
+                    } else {
+                        map<string, double>::iterator it;
+                        for (it = all_deltas.begin(); it != all_deltas.end(); it++) {
+                            it->second += (d_weights.at(it->first) / new_batch_size);
+                        }
+                    }
+                }
+
+                for (int u = counter; u < upper_limit; u++) {
+                    current_brain.load(training_data.at(u));
+                    update_weights(all_deltas);
+                    instanceState[u] = values_matching(current_brain.layers[current_brain.layers.size() - 1],
+                                                       current_brain.expected_output_values);
+                }
+                counter += upper_limit;
+            }
+        }
+
+        return current_iteration;
+    }
+
 	long neural_network::think_sgd(long max_nb_iterations) {
 		vector<bool> instanceState;
 		for (int u = 0; u < training_data.size(); u++) {
@@ -284,60 +339,6 @@ namespace cx {
 
 	void neural_network::breakOnEpoc() {
 		break_on_epoc = true;
-	}
-
-	long neural_network::think_minibatch(long max_nb_iterations) {
-		vector<bool> instanceState;
-		for (int u = 0; u < training_data.size(); u++) {
-			instanceState.push_back(false);
-		}
-
-		while (not_all_true(instanceState) && current_iteration < max_nb_iterations) {
-			current_iteration++;
-
-			int counter = 0;
-
-			while (counter < training_data.size()) {
-
-				map<string, double> all_deltas;
-				int new_batch_size= batch_size;
-				int upper_limit = counter + new_batch_size;
-
-				if ((training_data.size() - upper_limit < new_batch_size)) {
-					new_batch_size += (training_data.size() - upper_limit);
-					upper_limit += (training_data.size() - upper_limit);
-				}
-
-				for (int u = counter; u < upper_limit; u++) {
-					current_brain.load(training_data.at(u));
-					eval_fwd_propagation();
-					training_data[u] = current_brain.unload();
-					map<string, vector<double>> gradients = eval_gradients();
-					map<string, double> d_weights = delta_weights(gradients);
-					if (all_deltas.size() == 0) {
-						all_deltas.insert(d_weights.begin(), d_weights.end());
-						map<string, double>::iterator it;
-						for (it = all_deltas.begin(); it != all_deltas.end(); it++) {
-							it->second = it->second / new_batch_size;
-						}
-					} else {
-						map<string, double>::iterator it;
-						for (it = all_deltas.begin(); it != all_deltas.end(); it++) {
-							it->second += (d_weights.at(it->first) / new_batch_size);
-						}
-					}
-				}
-
-				for (int u = counter; u < upper_limit; u++) {
-					current_brain.load(training_data.at(u));
-					update_weights(all_deltas);
-					instanceState[u] = values_matching(current_brain.layers[current_brain.layers.size() - 1], current_brain.expected_output_values);
-				}
-				counter += upper_limit;
-			}
-		}
-
-		return current_iteration;
 	}
 
 	void brain::create_synapses() {

@@ -1,5 +1,5 @@
-method=MINI_BATCH
-batch_size=2
+method=SGD
+batch_size=4
 with_bias=false
 learning_rate=4.2
 input_size=2
