@@ -156,7 +156,7 @@ void read_training(const std::string& folder, std::size_t limit, Images& images,
  */
 template <typename Images, typename Labels, typename Functor>
 void read_test(std::size_t limit, Images& images, Labels& labels, Functor func) {
-    read_test("cifar-10", limit, images, labels, func);
+        read_test("/home/elie/data/cifar-10", limit, images, labels, func);
 }
 
 /*!
@@ -169,7 +169,7 @@ void read_test(std::size_t limit, Images& images, Labels& labels, Functor func) 
  */
 template <typename Images, typename Labels, typename Functor>
 void read_training(std::size_t limit, Images& images, Labels& labels, Functor func) {
-    read_training("cifar-10", limit, images, labels, func);
+        read_training("/home/elie/data/cifar-10", limit, images, labels, func);
 }
 
 /*!
@@ -258,7 +258,7 @@ void read_test_categorical(const std::string& folder, std::size_t limit, Images&
  */
 template <typename Images, typename Labels>
 void read_training_categorical(std::size_t limit, Images& images, Labels& labels) {
-    read_training_categorical("cifar-10", limit, images, labels);
+        read_training_categorical("/home/elie/data/cifar-10", limit, images, labels);
 }
 
 /*!
@@ -271,7 +271,7 @@ void read_training_categorical(std::size_t limit, Images& images, Labels& labels
  */
 template <typename Images, typename Labels>
 void read_test_categorical(std::size_t limit, Images& images, Labels& labels) {
-    read_test_categorical("cifar-10", limit, images, labels);
+        read_test_categorical("/home/elie/data/cifar-10", limit, images, labels);
 }
 
 /*!

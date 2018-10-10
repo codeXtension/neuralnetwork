@@ -25,7 +25,7 @@ namespace cx {
         void create_synapses();
 
     public:
-        vector<int> expected_output_values;
+        vector<float> expected_output_values;
 
         map<int, vector<neuron>> layers;
         map<int, vector<synapse>> synapses;

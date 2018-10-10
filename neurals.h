@@ -80,9 +80,9 @@ namespace cx {
 		current_brain = brain(input_size, output_size, nb_hidden_layers, size_hidden_layer, with_bias);
 	}
 
-	void neural_network::initialize_data(vector<map<value_type, vector<int>>> data) {
+	void neural_network::initialize_data(vector<map<value_type, vector<float>>> data) {
 		training_data.clear();
-		for (map<value_type, vector<int>> instance : data) {
+		for (map<value_type, vector<float>> instance : data) {
 			data_holder dataHolder;
 			dataHolder.add_input(instance.at(INPUT));
 			dataHolder.expected_outputs = instance.at(OUTPUT);
@@ -121,7 +121,7 @@ namespace cx {
 		return !result;
 	}
 
-	bool neural_network::values_matching(vector<neuron> neurons, vector<int> expected_values) {
+	bool neural_network::values_matching(vector<neuron> neurons, vector<float> expected_values) {
 		bool result = true;
 
 		for (int i = 0; i < neurons.size(); i++) {

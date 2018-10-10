@@ -41,17 +41,44 @@ namespace cx {
         return sigmoid * (1.0 - sigmoid);
     }
 
-    vector<map<value_type, vector<int>>> readFile(const string &file_path) {
+
+    vector<map<value_type, vector<float>>>
+    readData(vector<vector<unsigned char>> images, vector<unsigned char> labels) {
+        vector<map<value_type, vector<float>>> output;
+
+        for (int j = 0; j < images.size(); j++) {
+            vector<unsigned char> value = images.at(j);
+            vector<float> inputs;
+            vector<float> outputs;
+            map<value_type, vector<float>> out;
+            for (int i = 0; i < value.size(); i++) {
+                inputs.push_back(((int) value.at(i)) / 256.0);
+            }
+
+            for (int k = 0; k < 4; ++k) {
+                outputs.push_back((labels.at(j) >> k) & 1);
+            }
+
+            out.insert(pair<value_type, vector<float>>(INPUT, inputs));
+            out.insert(pair<value_type, vector<float>>(OUTPUT, outputs));
+
+            output.push_back(out);
+        }
+
+        return output;
+    }
+
+    vector<map<value_type, vector<float>>> readFile(const string &file_path) {
         ifstream input_file(file_path);
-        vector<map<value_type, vector<int>>> output;
+        vector<map<value_type, vector<float>>> output;
         for (string line; getline(input_file, line);) {
             istringstream ss(line);
-            map<value_type, vector<int>> results;
+            map<value_type, vector<float>> results;
             int x = 1;
             while (ss.good()) {
                 string s;
                 getline(ss, s, ';');
-                vector<int> input;
+                vector<float> input;
                 unsigned long n = s.length();
                 char char_array[n];
                 strcpy(char_array, s.c_str());
@@ -59,10 +86,10 @@ namespace cx {
                     input.push_back(char_array[i] - '0');
 
                 if (x == 1) {
-                    results.insert(pair<value_type, vector<int>>(OUTPUT, input));
+                    results.insert(pair<value_type, vector<float>>(OUTPUT, input));
                     x++;
                 } else {
-                    results.insert(pair<value_type, vector<int>>(INPUT, input));
+                    results.insert(pair<value_type, vector<float>>(INPUT, input));
                     x--;
                 }
             }
@@ -85,15 +112,15 @@ namespace cx {
 
     class data_holder {
     public:
-        void add_input(vector<int> &inputs);
+        void add_input(vector<float> &inputs);
 
         map<string, double> weights;
-        map<string, int> values;
-        vector<int> expected_outputs;
-        vector<int> prev_outputs;
+        map<string, float> values;
+        vector<float> expected_outputs;
+        vector<float> prev_outputs;
     };
 
-    void data_holder::add_input(vector<int> &inputs) {
+    void data_holder::add_input(vector<float> &inputs) {
         for (int i = 1; i <= inputs.size(); i++) {
             int input = inputs.at(static_cast<unsigned long>(i - 1));
             string node_name = "N1." + to_string(i);

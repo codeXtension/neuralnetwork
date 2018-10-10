@@ -15,12 +15,7 @@ struct boost::cnv::by_default : public boost::cnv::lexical_cast {
 int main(int argc, char *argv[]) {
     cout.precision(17);
 
-//    auto dataset = cifar::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
-//
-//    for(uint8_t const& value: dataset.training_images[0]) {
-//    	cout << value;
-//    }
-//    cout << endl;
+    auto dataset = cifar::read_dataset<std::vector, std::vector, unsigned char, unsigned char>();
 
     if (argc == 1) {
         cout << "Please provide the configuration file path"
@@ -39,12 +34,13 @@ int main(int argc, char *argv[]) {
             convert<int>(props.at("size_hidden_layer")).value());
     network.batch_size=convert<int>(props.at("batch_size")).value_or(1);
 
-    auto out = cx::readFile(props.at("training_file"));
+    auto out_file = cx::readFile(props.at("training_file"));
+    auto out_data = cx::readData(dataset.training_images, dataset.training_labels);
 
     if (props.at("break_on_epoc") == "true")
         network.breakOnEpoc();
 
-    network.initialize_data(out);
+    network.initialize_data(out_data);
     auto started = std::chrono::high_resolution_clock::now();
     long res = network.think(convert<int>(props.at("max_nb_iterations")).value_or(1000000));
     auto done = std::chrono::high_resolution_clock::now();

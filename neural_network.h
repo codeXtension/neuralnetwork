@@ -25,7 +25,7 @@ namespace cx {
 
 			neural_network(bool with_bias, double learning_rate, method_type meth_type, int input_size, int output_size, int nb_hidden_layers, int size_hidden_layer);
 
-			void initialize_data(vector<map<value_type, vector<int>>> data);
+		void initialize_data(vector<map<value_type, vector<float>>> data);
 
 			long think();
 
@@ -50,7 +50,7 @@ namespace cx {
 
 			bool not_all_true(vector<bool> states);
 
-			bool values_matching(vector<neuron> neurons, vector<int> expected_values);
+		bool values_matching(vector<neuron> neurons, vector<float> expected_values);
 
 			void eval_fwd_propagation();
 
