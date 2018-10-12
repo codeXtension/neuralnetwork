@@ -1,7 +1,16 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.12)
 project(neuralnetwork)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3")
+set(CMAKE_CXX_STANDARD 14)
 
-add_executable(neuralnetwork utilities.h neural_network.h main.cpp synapse.h neuron.h brain.h neurals.h cifar10_reader.h)
+include_directories(.)
+
+add_executable(neuralnetwork
+        brain.h
+        cifar10_reader.h
+        main.cpp
+        neural_network.h
+        neurals.h
+        neuron.h
+        synapse.h
+        utilities.h)
