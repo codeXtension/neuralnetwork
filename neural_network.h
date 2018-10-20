@@ -19,56 +19,57 @@
 using namespace std;
 
 namespace cx {
-	class neural_network {
-		public:
-			neural_network();
+    class neural_network {
+    public:
+        neural_network();
 
-			neural_network(bool with_bias, double learning_rate, method_type meth_type, int input_size, int output_size, int nb_hidden_layers, int size_hidden_layer);
+        neural_network(bool with_bias, double learning_rate, method_type meth_type, int input_size, int output_size,
+                       int nb_hidden_layers, int size_hidden_layer);
 
-		void initialize_data(vector<map<value_type, vector<float>>> data);
+        void initialize_data(vector<map<value_type, vector<float>>> data);
 
-			long think();
+        long think();
 
-			long think(long max_nb_iterations);
+        long think(long max_nb_iterations);
 
-			void guess();
+        void guess();
 
-			void breakOnEpoc();
+        void breakOnEpoc();
 
-			int batch_size=1;
+        int batch_size = 1;
 
-		private:
-			brain current_brain = brain(0, 0, 0, 0, false);
+    private:
+        brain current_brain = brain(0, 0, 0, 0, false);
 
-			bool break_on_epoc = false;
+        bool break_on_epoc = false;
 
-			long think_batch(long max_nb_iterations);
+        long think_batch(long max_nb_iterations);
 
-			long think_sgd(long max_nb_iterations);
+        long think_sgd(long max_nb_iterations);
 
-			long think_minibatch(long max_nb_iterations);
+        long think_minibatch(long max_nb_iterations);
 
-			bool not_all_true(vector<bool> states);
+        bool not_all_true(vector<bool> states);
 
-		bool values_matching(vector<neuron> neurons, vector<float> expected_values);
+        bool values_matching(vector<neuron> neurons, vector<float> expected_values);
 
-			void eval_fwd_propagation();
+        void eval_fwd_propagation();
 
-			map<string, double> delta_weights(map<string, vector<double>> gradients);
+        map<string, double> delta_weights(map<string, vector<double>> gradients);
 
-			void update_weights(map<string, double> deltas);
+        void update_weights(map<string, double> deltas);
 
-			map<string, vector<double>> eval_gradients();
+        map<string, vector<double>> eval_gradients();
 
-			double match_range;
-			bool with_bias;
-			double learning_rate;
-			int current_iteration;
-			method_type meth_type;
-			vector<data_holder> training_data;
-			int nb_hidden_layers;
-			int size_hidden_layer;
-	};
+        double match_range;
+        bool with_bias;
+        double learning_rate;
+        int current_iteration;
+        method_type meth_type;
+        vector<data_holder> training_data;
+        int nb_hidden_layers;
+        int size_hidden_layer;
+    };
 }
 
 #endif //NEURALNETWORK_NEURAL_NETWORK_H
