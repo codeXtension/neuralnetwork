@@ -8,7 +8,6 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include "utilities.h"
 #include <list>
 #include <map>
 #include <sstream>
@@ -16,6 +15,7 @@
 #include "neuron.h"
 #include "synapse.h"
 #include <typeinfo>
+#include "data_holder.h"
 
 using namespace std;
 
@@ -44,7 +44,7 @@ namespace cx {
 
         neuron find_by_id(const string &neuron_id);
 
-        void update_synapse(const string &synapse_id, int layer_nb, const double &weight);
+        void update_synapse(const string &synapseid, int layer_nb, const double &weight);
     };
 }
 

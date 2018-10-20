@@ -1,9 +1,9 @@
 
-#include "neurals.h"
 #include <boost/convert.hpp>
 #include <boost/convert/lexical_cast.hpp>
 #include "chrono"
 #include "cifar10_reader.h"
+#include "neural_network.h"
 
 using namespace cx;
 using boost::lexical_cast;
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
     if (props.at("break_on_epoc") == "true")
         network.breakOnEpoc();
 
-    network.initialize_data(out_data);
+    network.initialize_data(out_file);
     auto started = std::chrono::high_resolution_clock::now();
     long res = network.think(convert<int>(props.at("max_nb_iterations")).value_or(1000000));
     auto done = std::chrono::high_resolution_clock::now();

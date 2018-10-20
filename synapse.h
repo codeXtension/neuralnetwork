@@ -1,5 +1,5 @@
 //
-// Created by elie on 12.03.18.
+// Created by elie on 20.10.18.
 //
 
 #ifndef NEURALNETWORK_SYNAPSE_H

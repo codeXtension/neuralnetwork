@@ -14,7 +14,7 @@
 #include <sstream>
 #include <climits>
 #include "brain.h"
-#include "neurals.h"
+#include "data_holder.h"
 
 using namespace std;
 
