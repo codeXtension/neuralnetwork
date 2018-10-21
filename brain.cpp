@@ -27,7 +27,7 @@ namespace cx {
         }
     }
 
-    brain::brain(int in_size, int out_size, vector<int> hidden_layers_data, bool with_bias) {
+    brain::brain(int in_size, int out_size, const vector<int> & hidden_layers_data, bool with_bias) {
         layers.clear();
 
         vector<neuron> neurons;

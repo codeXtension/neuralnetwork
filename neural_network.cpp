@@ -85,7 +85,7 @@ namespace cx {
                 training_data[u] = current_brain.unload();
                 map<string, vector<double>> gradients = eval_gradients();
                 map<string, double> d_weights = delta_weights(gradients);
-                if (all_deltas.size() == 0) {
+                if (all_deltas.empty()) {
                     all_deltas.insert(d_weights.begin(), d_weights.end());
                     map<string, double>::iterator it;
                     for (it = all_deltas.begin(); it != all_deltas.end(); it++) {
@@ -120,7 +120,7 @@ namespace cx {
 
         while (not_all_true(instanceState) && current_iteration < max_nb_iterations) {
             current_iteration++;
-
+cout << "Current iteration: " << current_iteration << endl;
             int counter = 0;
 
             while (counter < training_data.size()) {
@@ -140,7 +140,7 @@ namespace cx {
                     training_data[u] = current_brain.unload();
                     map<string, vector<double>> gradients = eval_gradients();
                     map<string, double> d_weights = delta_weights(gradients);
-                    if (all_deltas.size() == 0) {
+                    if (all_deltas.empty()) {
                         all_deltas.insert(d_weights.begin(), d_weights.end());
                         map<string, double>::iterator it;
                         for (it = all_deltas.begin(); it != all_deltas.end(); it++) {
@@ -231,8 +231,7 @@ namespace cx {
                 neuron neuron_instance = current_brain.layers[i][j];
                 vector<synapse> outgoing_synapses = current_brain.find_by_neuron_id(neuron_instance.id, false, i);
 
-                for (int s = 0; s < outgoing_synapses.size(); s++) {
-                    synapse synapseinstance = outgoing_synapses[s];
+                for (auto synapseinstance : outgoing_synapses) {
                     double weight = synapseinstance.weight - (learning_rate * deltas.at(synapseinstance.id));
 
                     current_brain.update_synapse(synapseinstance.id, i, weight);
@@ -269,7 +268,5 @@ namespace cx {
         return deltas;
     }
 
-    neural_network::neural_network() {
-
-    }
+    neural_network::neural_network() = default;
 }

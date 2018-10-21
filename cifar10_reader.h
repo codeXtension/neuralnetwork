@@ -21,7 +21,7 @@
 #include <memory>
 
 namespace cifar {
-
+std::string cifar_folder = "";
 /*!
  * \brief Represents a complete CIFAR10 dataset
  * \tparam Container The container to use
@@ -156,7 +156,7 @@ void read_training(const std::string& folder, std::size_t limit, Images& images,
  */
 template <typename Images, typename Labels, typename Functor>
 void read_test(std::size_t limit, Images& images, Labels& labels, Functor func) {
-        read_test("/home/elie/data/cifar-10", limit, images, labels, func);
+        read_test(cifar_folder, limit, images, labels, func);
 }
 
 /*!
@@ -169,7 +169,7 @@ void read_test(std::size_t limit, Images& images, Labels& labels, Functor func) 
  */
 template <typename Images, typename Labels, typename Functor>
 void read_training(std::size_t limit, Images& images, Labels& labels, Functor func) {
-        read_training("/home/elie/data/cifar-10", limit, images, labels, func);
+        read_training(cifar_folder, limit, images, labels, func);
 }
 
 /*!
@@ -258,7 +258,7 @@ void read_test_categorical(const std::string& folder, std::size_t limit, Images&
  */
 template <typename Images, typename Labels>
 void read_training_categorical(std::size_t limit, Images& images, Labels& labels) {
-        read_training_categorical("/home/elie/data/cifar-10", limit, images, labels);
+        read_training_categorical(cifar_folder, limit, images, labels);
 }
 
 /*!
@@ -271,7 +271,7 @@ void read_training_categorical(std::size_t limit, Images& images, Labels& labels
  */
 template <typename Images, typename Labels>
 void read_test_categorical(std::size_t limit, Images& images, Labels& labels) {
-        read_test_categorical("/home/elie/data/cifar-10", limit, images, labels);
+        read_test_categorical(cifar_folder, limit, images, labels);
 }
 
 /*!
@@ -324,7 +324,8 @@ CIFAR10_dataset<Container, Image, Label> read_dataset_direct(std::size_t trainin
  * \return The dataset
  */
 template <template <typename...> class Container = std::vector, template <typename...> class Sub = std::vector, typename Pixel = uint8_t, typename Label = uint8_t>
-CIFAR10_dataset<Container, Sub<Pixel>, Label> read_dataset(std::size_t training_limit = 0, std::size_t test_limit = 0) {
+CIFAR10_dataset<Container, Sub<Pixel>, Label> read_dataset(const std::string &cifar_dir, std::size_t training_limit = 0, std::size_t test_limit = 0) {
+    cifar_folder = cifar_dir;
     return read_dataset_direct<Container, Sub<Pixel>, Label>(training_limit, test_limit);
 }
 
