@@ -89,10 +89,6 @@ namespace cx {
             vector<neuron> sources = layers.at(i);
             for (neuron source : sources) {
                 dataHolder.values.insert(pair<string, int>(source.id, source.value));
-                vector<synapse> outgoing_synapses = find_by_neuron_id(source.id, false, i);
-                for (synapse synapse : outgoing_synapses) {
-                    dataHolder.weights.insert(pair<string, int>(synapse.id, synapse.weight));
-                }
             }
         }
 

@@ -18,11 +18,15 @@ namespace cx {
 
     void neural_network::initialize_data(vector<map<value_type, vector<float>>> data) {
         training_data.clear();
+        int i = 0;
         for (map<value_type, vector<float>> instance : data) {
+            i++;
+            if (i == 1000) {
+                return;
+            }
             data_holder dataHolder;
             dataHolder.add_input(instance.at(INPUT));
             dataHolder.expected_outputs = instance.at(OUTPUT);
-            dataHolder.weights = this->current_brain.actualWeights();
             training_data.push_back(dataHolder);
         }
     }
@@ -113,14 +117,11 @@ namespace cx {
     }
 
     long neural_network::think_minibatch(long max_nb_iterations) {
-        vector<bool> instanceState;
-        for (int u = 0; u < training_data.size(); u++) {
-            instanceState.push_back(false);
-        }
 
-        while (not_all_true(instanceState) && current_iteration < max_nb_iterations) {
+        while (current_iteration < max_nb_iterations) {
             current_iteration++;
-cout << "Current iteration: " << current_iteration << endl;
+            cout << "Current iteration: " << current_iteration << endl;
+            cout.flush();
             int counter = 0;
 
             while (counter < training_data.size()) {
@@ -157,8 +158,6 @@ cout << "Current iteration: " << current_iteration << endl;
                 for (int u = counter; u < upper_limit; u++) {
                     current_brain.load(training_data.at(u));
                     update_weights(all_deltas);
-                    instanceState[u] = values_matching(current_brain.layers[current_brain.layers.size() - 1],
-                                                       current_brain.expected_output_values);
                 }
                 counter += upper_limit;
             }

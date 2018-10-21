@@ -23,10 +23,11 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    cout << endl << "Reading configuration from " << argv[1];
+    cout << endl << "Reading configuration from " << argv[1] << " ...";
     config_reader props = config_reader(argv[1]);
     cout << "\t[OK]" << endl;
-    cout << "Initialising neural network";
+    cout << "Initialising neural network ...";
+    cout.flush();
     neural_network network = neural_network(
             props.with_bias,
             props.learning_rate,
@@ -40,11 +41,16 @@ int main(int argc, char *argv[]) {
     cout << "\t[OK]" << endl;
     //auto out_file = cx::readFile(props.training_file);
 
-    cout << "Reading CIFAR-10 dataset";
+    cout << "Reading CIFAR-10 dataset ...";
+    cout.flush();
     auto dataset = cifar::read_dataset<std::vector, std::vector, unsigned char, unsigned char>(props.training_file);
     auto out_data = cx::readData(dataset.training_images, dataset.training_labels);
     cout << "\t[OK]" << endl;
+    cout << "Initialising data (allocating " << out_data.size() << " records) ...";
+    cout.flush();
     network.initialize_data(out_data);
+    cout << "\t[OK]" << endl;
+    cout << "\nThinking ..." << endl;
     auto started = std::chrono::high_resolution_clock::now();
     long res;
     if (props.max_nb_iterations == -1) {

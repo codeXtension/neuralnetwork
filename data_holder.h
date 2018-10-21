@@ -16,11 +16,8 @@ namespace cx {
     class data_holder {
     public:
         void add_input(vector<float> &inputs);
-
-        map<string, double> weights;
         map<string, float> values;
         vector<float> expected_outputs;
-        vector<float> prev_outputs;
     };
 }
 #endif //NEURALNETWORK_DATA_HOLDER_H
