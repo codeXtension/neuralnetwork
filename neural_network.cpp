@@ -72,14 +72,9 @@ namespace cx {
         return result;
     }
 
-    long neural_network::think_batch(long max_nb_iterations) {
+    thinking_result neural_network::think_batch(long max_nb_iterations) {
 
-        vector<bool> instanceState;
-        for (int u = 0; u < training_data.size(); u++) {
-            instanceState.push_back(false);
-        }
-
-        while (not_all_true(instanceState) && current_iteration < max_nb_iterations) {
+        while (current_iteration < max_nb_iterations) {
             current_iteration++;
             map<string, double> all_deltas;
 
@@ -106,9 +101,6 @@ namespace cx {
             for (int u = 0; u < training_data.size(); u++) {
                 current_brain.load(training_data.at(u));
                 update_weights(all_deltas);
-//                training_data[u] = current_brain.unload();
-                instanceState[u] = values_matching(current_brain.layers[current_brain.layers.size() - 1],
-                                                   current_brain.expected_output_values);
             }
 
         }
@@ -116,8 +108,9 @@ namespace cx {
         return current_iteration;
     }
 
-    long neural_network::think_minibatch(long max_nb_iterations) {
+    thinking_result neural_network::think_minibatch(long max_nb_iterations) {
 
+        thinking_result results;
         while (current_iteration < max_nb_iterations) {
             current_iteration++;
             cout << "Current iteration: " << current_iteration << endl;
@@ -163,15 +156,14 @@ namespace cx {
             }
         }
 
-        return current_iteration;
+        results.iterations = current_iteration;
+        results.accuracy = 1;
+
+        return results;
     }
 
-    long neural_network::think_sgd(long max_nb_iterations) {
-        vector<bool> instanceState;
-        for (int u = 0; u < training_data.size(); u++) {
-            instanceState.push_back(false);
-        }
-        while (not_all_true(instanceState) && current_iteration < max_nb_iterations) {
+    thinking_result neural_network::think_sgd(long max_nb_iterations) {
+        while (current_iteration < max_nb_iterations) {
             current_iteration++;
             for (int u = 0; u < training_data.size(); u++) {
                 current_brain.load(training_data.at(u));
@@ -179,8 +171,6 @@ namespace cx {
                 map<string, vector<double>> gradients = eval_gradients();
                 map<string, double> d_weights = delta_weights(gradients);
                 update_weights(d_weights);
-                instanceState[u] = values_matching(current_brain.layers[current_brain.layers.size() - 1],
-                                                   current_brain.expected_output_values);
             }
         }
         return current_iteration;
