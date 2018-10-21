@@ -27,10 +27,11 @@ namespace cx {
         }
     }
 
-    brain::brain(int in_size, int out_size, int nb_hidden_layers, int hidden_layer_size, bool with_bias) {
+    brain::brain(int in_size, int out_size, vector<int> hidden_layers_data, bool with_bias) {
         layers.clear();
 
         vector<neuron> neurons;
+        int nb_hidden_layers = hidden_layers_data.size();
 
         for (int j = 0; j < in_size; j++) {
             stringstream id;
@@ -40,6 +41,7 @@ namespace cx {
         layers.insert(pair<int, vector<neuron>>(0, neurons));
 
         for (int i = 1; i < nb_hidden_layers + 1; i++) {
+            int hidden_layer_size = hidden_layers_data[i - 1];
             neurons.clear();
             if (with_bias) {
                 stringstream id;

@@ -24,7 +24,7 @@ namespace cx {
         neural_network();
 
         neural_network(bool with_bias, double learning_rate, method_type meth_type, int input_size, int output_size,
-                       int nb_hidden_layers, int size_hidden_layer);
+                       vector<int> hidden_layers_data, float accuracy);
 
         void initialize_data(vector<map<value_type, vector<float>>> data);
 
@@ -34,12 +34,10 @@ namespace cx {
 
         void guess();
 
-        void breakOnEpoc();
-
         int batch_size = 1;
 
     private:
-        brain current_brain = brain(0, 0, 0, 0, false);
+        brain current_brain = brain(0, 0, vector<int>(), false);
 
         bool break_on_epoc = false;
 
@@ -61,14 +59,11 @@ namespace cx {
 
         map<string, vector<double>> eval_gradients();
 
-        double match_range;
-        bool with_bias;
+        float match_range;
         double learning_rate;
         int current_iteration;
         method_type meth_type;
         vector<data_holder> training_data;
-        int nb_hidden_layers;
-        int size_hidden_layer;
     };
 }
 

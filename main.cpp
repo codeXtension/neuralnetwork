@@ -4,6 +4,7 @@
 #include "chrono"
 #include "cifar10_reader.h"
 #include "neural_network.h"
+#include "config_reader.h"
 
 using namespace cx;
 using boost::lexical_cast;
@@ -15,37 +16,42 @@ struct boost::cnv::by_default : public boost::cnv::lexical_cast {
 int main(int argc, char *argv[]) {
     cout.precision(17);
 
-    auto dataset = cifar::read_dataset<std::vector, std::vector, unsigned char, unsigned char>();
 
     if (argc == 1) {
         cout << "Please provide the configuration file path"
              << endl;
         return 0;
     }
-    map<string, string> props = read_startup_attributes(argv[1]);
+
+    config_reader props = config_reader(argv[1]);
 
     neural_network network = neural_network(
-            props.at("with_bias") == "true",
-            convert<double>(props.at("learning_rate")).value(),
-            (props.at("method") == "SGD" ? SGD : (props.at("method") == "BATCH" ? BATCH : MINI_BATCH)),
-            convert<int>(props.at("input_size")).value(),
-            convert<int>(props.at("output_size")).value(),
-            convert<int>(props.at("nb_hidden_layers")).value(),
-            convert<int>(props.at("size_hidden_layer")).value());
-    network.batch_size=convert<int>(props.at("batch_size")).value_or(1);
+            props.with_bias,
+            props.learning_rate,
+            props.method,
+            props.input_size,
+            props.output_size,
+            props.hidden_layers_data,
+            props.accuracy);
 
-    auto out_file = cx::readFile(props.at("training_file"));
-    auto out_data = cx::readData(dataset.training_images, dataset.training_labels);
+    network.batch_size = props.batch_size;
 
-    if (props.at("break_on_epoc") == "true")
-        network.breakOnEpoc();
+    auto out_file = cx::readFile(props.training_file);
+
+//    auto dataset = cifar::read_dataset<std::vector, std::vector, unsigned char, unsigned char>();
+//    auto out_data = cx::readData(dataset.training_images, dataset.training_labels);
 
     network.initialize_data(out_file);
     auto started = std::chrono::high_resolution_clock::now();
-    long res = network.think(convert<int>(props.at("max_nb_iterations")).value_or(1000000));
+    long res;
+    if (props.max_nb_iterations == -1) {
+        res = network.think();
+    } else {
+        res = network.think(props.max_nb_iterations);
+    }
     auto done = std::chrono::high_resolution_clock::now();
     long ms = std::chrono::duration_cast<std::chrono::milliseconds>(done - started).count();
-    cout << "trained using " << props.at("method") << " after a number of iterations: " << res << ", and took " << ms
+    cout << "trained using " << props.method << " after a number of iterations: " << res << ", and took " << ms
          << "ms"
          << endl;
     return 0;

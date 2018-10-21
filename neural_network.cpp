@@ -5,19 +5,15 @@
 #include "neural_network.h"
 
 namespace cx {
-    const float MATCH_RANGE = 0.1;
 
     neural_network::neural_network(bool with_bias, double learning_rate, method_type meth_type, int input_size,
-                                   int output_size, int nb_hidden_layers, int size_hidden_layer) {
+                                   int output_size, vector<int> hidden_layers_data, float accuracy) {
         this->current_iteration = 0;
         this->training_data = {};
-        this->match_range = MATCH_RANGE;
+        this->match_range = accuracy;
         this->meth_type = meth_type;
-        this->with_bias = with_bias;
-        this->nb_hidden_layers = nb_hidden_layers;
-        this->size_hidden_layer = size_hidden_layer;
         this->learning_rate = learning_rate;
-        current_brain = brain(input_size, output_size, nb_hidden_layers, size_hidden_layer, with_bias);
+        current_brain = brain(input_size, output_size, hidden_layers_data, with_bias);
     }
 
     void neural_network::initialize_data(vector<map<value_type, vector<float>>> data) {
@@ -187,11 +183,6 @@ namespace cx {
                 instanceState[u] = values_matching(current_brain.layers[current_brain.layers.size() - 1],
                                                    current_brain.expected_output_values);
             }
-
-            if (break_on_epoc) {
-                cout << "Press Enter to Continue" << endl;
-                cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
-            }
         }
         return current_iteration;
     }
@@ -280,9 +271,5 @@ namespace cx {
 
     neural_network::neural_network() {
 
-    }
-
-    void neural_network::breakOnEpoc() {
-        break_on_epoc = true;
     }
 }

@@ -39,7 +39,5 @@ namespace cx {
     readData(vector<vector<unsigned char>> images, vector<unsigned char> labels);
 
     vector<map<value_type, vector<float>>> readFile(const string &file_path);
-
-    map<string, string> read_startup_attributes(const string &properties_file);
 }
 #endif //NEURALNETWORK_UTILITIES_H

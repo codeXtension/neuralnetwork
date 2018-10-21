@@ -30,7 +30,7 @@ namespace cx {
         map<int, vector<neuron>> layers;
         map<int, vector<synapse>> synapses;
 
-        brain(int in_size, int out_size, int nb_hidden_layers, int hidden_layer_size, bool with_bias);
+        brain(int in_size, int out_size, vector<int> hidden_layers_data, bool with_bias);
 
         void load(const data_holder &test_data_holder);
 

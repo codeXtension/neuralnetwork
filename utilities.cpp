@@ -14,7 +14,6 @@ namespace cx {
         return sigmoid * (1.0 - sigmoid);
     }
 
-
     vector<map<value_type, vector<float>>>
     readData(vector<vector<unsigned char>> images, vector<unsigned char> labels) {
         vector<map<value_type, vector<float>>> output;
@@ -70,16 +69,4 @@ namespace cx {
         }
         return output;
     };
-
-    map<string, string> read_startup_attributes(const string &properties_file) {
-        ifstream input_file(properties_file);
-        map<string, string> output;
-        for (string line; getline(input_file, line);) {
-            vector<std::string> strs;
-            boost::split(strs, line, boost::is_any_of("="));
-            output.insert(pair<string, string>(strs[0], strs[1]));
-        }
-
-        return output;
-    }
 }
