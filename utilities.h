@@ -32,11 +32,6 @@ namespace cx {
         MINI_BATCH
     };
 
-    struct thinking_result {
-        long iterations;
-        float accuracy;
-    };
-
     double sigmoid(const double &value);
 
     double derivativeSigmoid(const double &value);

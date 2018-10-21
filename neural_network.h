@@ -41,11 +41,11 @@ namespace cx {
 
         bool break_on_epoc = false;
 
-        thinking_result think_batch(long max_nb_iterations);
+        float think_batch(long max_nb_iterations);
 
-        thinking_result think_sgd(long max_nb_iterations);
+        float think_sgd(long max_nb_iterations);
 
-        thinking_result think_minibatch(long max_nb_iterations);
+        float think_minibatch(long max_nb_iterations);
 
         bool not_all_true(vector<bool> states);
 

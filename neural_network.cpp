@@ -72,7 +72,7 @@ namespace cx {
         return result;
     }
 
-    thinking_result neural_network::think_batch(long max_nb_iterations) {
+    float neural_network::think_batch(long max_nb_iterations) {
 
         while (current_iteration < max_nb_iterations) {
             current_iteration++;
@@ -105,12 +105,11 @@ namespace cx {
 
         }
 
-        return current_iteration;
+        return 0.0f;
     }
 
-    thinking_result neural_network::think_minibatch(long max_nb_iterations) {
+    float neural_network::think_minibatch(long max_nb_iterations) {
 
-        thinking_result results;
         while (current_iteration < max_nb_iterations) {
             current_iteration++;
             cout << "Current iteration: " << current_iteration << endl;
@@ -156,13 +155,10 @@ namespace cx {
             }
         }
 
-        results.iterations = current_iteration;
-        results.accuracy = 1;
-
-        return results;
+        return 0.0f;
     }
 
-    thinking_result neural_network::think_sgd(long max_nb_iterations) {
+    float neural_network::think_sgd(long max_nb_iterations) {
         while (current_iteration < max_nb_iterations) {
             current_iteration++;
             for (int u = 0; u < training_data.size(); u++) {
@@ -173,7 +169,7 @@ namespace cx {
                 update_weights(d_weights);
             }
         }
-        return current_iteration;
+        return 0.0f;
     }
 
     void neural_network::eval_fwd_propagation() {
