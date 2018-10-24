@@ -31,11 +31,11 @@ namespace cx {
         }
     }
 
-    long neural_network::think() {
+    float neural_network::think() {
         return think(LONG_MAX);
     }
 
-    long neural_network::think(long max_nb_iterations) {
+    float neural_network::think(long max_nb_iterations) {
         switch (meth_type) {
             case SGD:
                 return think_sgd(max_nb_iterations);

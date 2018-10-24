@@ -28,9 +28,9 @@ namespace cx {
 
         void initialize_data(vector<map<value_type, vector<float>>> data);
 
-        long think();
+        float think();
 
-        long think(long max_nb_iterations);
+        float think(long max_nb_iterations);
 
         void guess();
 
