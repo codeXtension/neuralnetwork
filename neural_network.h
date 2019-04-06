@@ -28,9 +28,9 @@ namespace cx {
 
         void initialize_data(vector<map<value_type, vector<float>>> data);
 
-        float think();
+        long think();
 
-        float think(long max_nb_iterations);
+        long think(long max_nb_iterations);
 
         void guess();
 
@@ -41,11 +41,11 @@ namespace cx {
 
         bool break_on_epoc = false;
 
-        float think_batch(long max_nb_iterations);
+        long think_batch(long max_nb_iterations);
 
-        float think_sgd(long max_nb_iterations);
+        long think_sgd(long max_nb_iterations);
 
-        float think_minibatch(long max_nb_iterations);
+        long think_minibatch(long max_nb_iterations);
 
         bool not_all_true(vector<bool> states);
 

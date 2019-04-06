@@ -39,15 +39,16 @@ int main(int argc, char *argv[]) {
 
     network.batch_size = props.batch_size;
     cout << "\t[OK]" << endl;
-    //auto out_file = cx::readFile(props.training_file);
+    auto out_data = cx::readFile(props.training_file);
 
-    cout << "Reading CIFAR-10 dataset ...";
-    cout.flush();
-    auto dataset = cifar::read_dataset<std::vector, std::vector, unsigned char, unsigned char>(props.training_file);
-    auto out_data = cx::readData(dataset.training_images, dataset.training_labels);
-    cout << "\t[OK]" << endl;
+    //cout << "Reading CIFAR-10 dataset ...";
+    //cout.flush();
+    //auto dataset = cifar::read_dataset<std::vector, std::vector, unsigned char, unsigned char>(props.training_file);
+    //auto out_data = cx::readData(dataset.training_images, dataset.training_labels);
+    //auto out_data = cx::readData(dataset.training_images, dataset.training_labels);
+    //cout << "\t[OK]" << endl;
     cout << "Initialising data (allocating " << out_data.size() << " records) ...";
-    cout.flush();
+    //cout.flush();
     network.initialize_data(out_data);
     cout << "\t[OK]" << endl;
     cout << "\nThinking ..." << endl;
@@ -60,11 +61,14 @@ int main(int argc, char *argv[]) {
     }
     auto done = std::chrono::high_resolution_clock::now();
     long ms = std::chrono::duration_cast<std::chrono::milliseconds>(done - started).count();
-    cout << "trained using " << props.method << " after a number of iterations: " << res << ", and took " << ms
+    cout << "trained using " << cx::method_name(props.method) << " after a number of iterations: " << res
+         << ", and took " << ms
          << "ms"
          << endl;
     return 0;
 }
+
+
 
 
 

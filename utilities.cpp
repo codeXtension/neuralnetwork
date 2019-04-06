@@ -68,5 +68,16 @@ namespace cx {
             output.push_back(results);
         }
         return output;
-    };
+    }
+
+    string method_name(const cx::method_type &methodType) {
+
+        if (methodType == cx::method_type::BATCH) {
+            return "BATCH";
+        } else if (methodType == cx::method_type::MINI_BATCH) {
+            return "MINI_BATCH";
+        } else {
+            return "SGD";
+        }
+    }
 }
